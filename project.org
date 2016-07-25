@@ -1,0 +1,15 @@
+#+TITLE: Project Plan
+#+TODO: TODO STARTED | DONE
+* MRes Goals[2/5]
+** DONE Understand the Stabiliser Rank Method
+** STARTED Code an Implementation
+** TODO Examine the Qutrit Case
+** DONE How do T-type states scale?
+** STARTED Check the BSS conjectures on the SR scaling of Magic States
+
+* Agenda
+
+* Report
+
+
+

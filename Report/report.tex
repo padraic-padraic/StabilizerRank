@@ -1,0 +1,83 @@
+\documentclass[notitlepage,onecolumn,prx,amsmath,amssymb,aps,a4paper,nofootinbib,hyphens]{revtex4-1}
+%-----------------------------------
+%% Sync Bibliography from Mendeley Generated
+\immediate\write18{../sync_bibliography.sh}
+%-----------------------------------
+ % Typeset email address with \nolinkurl:
+\makeatletter
+\renewcommand*\email[1][]{\begingroup\sanitize@url\@email{#1}}%
+\def\@email#1#2{%
+ \endgroup
+ \@AF@join{#1\href{mailto:#2}{\nolinkurl{#2}}}%
+}%
+\makeatother
+%-----------------------------------
+\usepackage[T1]{fontenc}
+%-----------------------------------
+% Math e an i
+\newcommand{\mathe}{\ensuremath{\mathrm{e}}}
+\newcommand{\mathi}{\ensuremath{\mathrm{i}}}
+\usepackage{textgreek}
+\usepackage{mathtools}
+\DeclarePairedDelimiter\ceil{\lceil}{\rceil}
+\DeclarePairedDelimiter\floor{\lfloor}{\rfloor}
+%-----------------------------------
+% Theorems and stuff
+\usepackage{amsthm}
+\theoremstyle{plain}% default
+\newtheorem{thm}{Theorem}[section]
+\newtheorem{lem}[thm]{Lemma}
+\newtheorem{prop}[thm]{Proposition}
+\newtheorem*{cor}{Corollary}
+\theoremstyle{definition}
+\newtheorem{defn}{Definition}[section]
+\newtheorem{exmp}{Example}[section]
+\newtheorem{xca}[exmp]{Exercise}
+\newtheorem{problem}{Problem}[section]
+\theoremstyle{remark}
+\newtheorem*{rem}{Remark}
+\newtheorem*{note}{Note}
+%-----------------------------------
+\usepackage{hyperref}
+\usepackage{graphicx}% Include figure files
+\graphicspath{{./Figures/}}
+\usepackage{dcolumn}% Align table columns on decimal point
+\usepackage{stackengine}
+\usepackage{xcolor}%
+\usepackage{algpseudocode,algorithm,algorithmicx}
+%------------------------------------
+\usepackage{tensor}
+\usepackage{physics}
+\usepackage{complexity}
+\renewcommand{\poly}{\ensuremath\text{poly}}
+\usepackage[separate-uncertainty=true]{siunitx}
+\usepackage{dsfont}
+%------------------------------------
+%\usepackage[sc]{mathpazo}
+%\linespread{1.05}
+\usepackage[margin=1in,includefoot]{geometry}
+\usepackage{enumerate}
+\usepackage{enumitem}
+\newenvironment{benumerate}{\begin{enumerate}[label=\textbf{\arabic*})]}{\end{enumerate}}
+\newenvironment{anumerate}{\begin{enumerate}[label=\textbf{\alph*}.]}{\end{enumerate}}
+\usepackage{array}
+\newcolumntype{P}[1]{>{\centering\arraybackslash}p{#1}}
+\usepackage{standalone}
+\begin{document}
+\title{\textbf{MRes Report:} Studying Quantum Computing with the Stabilizer Rank Method }
+\author{\textsc{Padraic Calpin}}
+% \email{padraic.calpin.15@ucl.ac.uk}
+\affiliation{EPSRC Centre for Doctoral Training in Delivering Quantum Technologies\\ Department of Physics and Astronomy, University College London, Gower Street, London WC1E 6BT}
+\author{\textbf{Supervisor:} \textsc{Dr. Dan Browne}}
+% \email{d.browne@ucl.ac.uk}
+\affiliation{EPSRC Centre for Doctoral Training in Delivering Quantum Technologies\\ Department of Physics and Astronomy, University College London, Gower Street, London WC1E 6BT}
+\date{\today}
+\begin{abstract}
+   \input{abstract.tex}
+\end{abstract}
+\maketitle
+%\tableofcontents
+\input{MainText.tex}
+\bibliographystyle{nicebib}
+\bibliography{../MResProject.bib}
+\end{document}
