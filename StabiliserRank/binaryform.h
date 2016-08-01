@@ -16,6 +16,11 @@ typedef struct quadratic_fm {
     unsigned short **K;
 } quadratic_fm;
 
+typedef struct stabiliser {
+    affine_sp *a;
+    quadratic_fm *q;
+}
+
 typedef {EMPTY, SAME, SUCCESS} result;
 
 int DeleteFromArray(int len; int target, unsigned *arr);

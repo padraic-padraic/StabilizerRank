@@ -118,8 +118,10 @@ int RandomInt(unsigned short *len)
     return target;
 }
 
-result shrink(affine_sp *a, quadratic_fm *q, unsigned short *xi, unsigned short alpha)
+result shrink(stabiliser *phi, unsigned short *xi, unsigned short alpha)
 {
+    affine_sp *a = phi->a;
+    quadratic_fm *q = phi->q;
     unsigned short S[a->k];
     unsigned short order_S = 0;
     for (int i = 0; i < a->k; i++){
@@ -176,17 +178,18 @@ result shrink(affine_sp *a, quadratic_fm *q, unsigned short *xi, unsigned short 
     return SUCCESS;
 }
 
-result lazy_shrink(affine_sp *a, unsigned short *xi, unsigned short alpha)
+result lazy_shrink(stabiliser *phi, unsigned short *xi, unsigned short alpha)
 {
+    affine_sp *a = phi->a;
     unsigned short S[a->k];
     unsigned short order_S = 0;
     for (int i = 0; i < a->k; i++){
-        if (Modulo(InnerProduct(a->k, xi, a->G[i]), 2) == alpha){
+        if (Modulo(InnerProduct(phi->a.k, xi, a->G[i]), 2) == alpha){
             S[order_S] = i;
             order_S++;
         }
     }
-    unsigned short beta = Modulo(InnerProduct(a->k, xi, a->h), 2);
+    unsigned short beta = Modulo(InnerProduct(phi->a.k, xi, a->h), 2);
     if (S[0] == 0 && beta == 1){
         return EMPTY;
     } else if (S[0] == 0 && beta ==1){
