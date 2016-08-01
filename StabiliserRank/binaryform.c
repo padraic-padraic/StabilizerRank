@@ -63,7 +63,7 @@ unsigned short DBasisChange(int len, int index, unsigned short **J, unsigned sho
     return res;
 }
 
-unsigned short QShiftChange(int len, unsigned short **J, unsigned short *y)
+unsigned short qfm_ShiftChange(int len, unsigned short **J, unsigned short *y)
 {
     unsigned short res = 0;
     for (int i = 0; i < len; i++){
@@ -79,4 +79,130 @@ void qfm_BasisChange(quadratic_fm *q, unsigned short **R){
     for (int i=0; i < len; i++){
         q->D[i] += Modulo(DBasisChange(len, i, q->J, R), 8);
     }
+}
+
+void qfm_DeleteIndex(quadratic_fm *q, int target)
+{
+    for (int i = target; i < q->k -1; i++){
+        q->D[i] = q->D[i+1];
+    }
+    free(q->D[k]);
+    for (int i = 0; i < q->k; i++){free(q->J[i][q->k]);}
+    free(q->J[q->k]);
+    q->k -= 1;
+}
+
+void afp_AddVectors(int len, unsigned short *v1, unsigned short *v2)
+{
+    for (int i = 0; i < len; i++){
+        v1[i] = Modulo(v1[i] + v2[i], 2);
+    }
+}
+
+void afp_SwapVectors(affine_sp *a, int target)
+{
+    unsigned short scratch_space;
+    for (int i = 0; i < a->n; i++){
+        scratch_space = a->G[target][i];
+        a->G[target][i] = a->G[a->k][i];
+        a->G[a->k][i] = scratch_space;
+        scratch_space = a->Gbar[target][i];
+        a->Gbar[target][i] = a->Gbar[a->k][i]
+        a->Gbar[a->k][i] = scratch_space;
+    }
+}
+
+int RandomInt(unsigned short *len)
+{    
+    int target = (int)((double)rand() / ((double)RAND_MAX + 1) * (*order_S)); //Snippet taken from http://c-faq.com/lib/randrange.html
+    return target;
+}
+
+result shrink(affine_sp *a, quadratic_fm *q, unsigned short *xi, unsigned short alpha)
+{
+    unsigned short S[a->k];
+    unsigned short order_S = 0;
+    for (int i = 0; i < a->k; i++){
+        if (Modulo(InnerProduct(a->k, xi, a->G[i]), 2) == alpha){
+            S[order_S] = i;
+            order_S++;
+        }
+    }
+    unsigned short beta = Modulo(InnerProduct(a->k, xi, a->h), 2);
+    if (S[0] == 0 && beta == 1){
+        return EMPTY;
+    } else if (S[0] == 0 && beta ==1){
+        return SAME;
+    } else {
+        int target = RandomInt(&order_S);
+        for (int i = 0; i < order_S; i++){
+            if (i==target){continue;}
+            afp_AddVectors(a->G[i], a->G[target]);
+            afp_AddVectors(a->Gbar[target], a->GBar[i]);
+        }
+        unsigned short **R = (unsigned short **)calloc(q->k, sizeof(unsigned short*));
+        for (int i = 0; i <q->k;i++){
+            R[i]=(unsigned short *)calloc(q->k, sizeof(unsigned short));
+            R[i][i] = 1;
+        }
+        for (int i=0; i < order_S; i++){
+            if (i==target){continue;}
+            //Set the correct element of R to 1
+            R[S[i]][S[target]] = 1;
+        }
+        qfm_BasisChange(q, R);
+        //Reset the transformation matrix
+        for (int i =0; i < q->k; i++){
+            for (int j=0; j < q->k; j++){R[i][j] = 0;}
+        }
+    }
+    afp_SwapVectors(a, target);
+    for (int i = 0; i < q->k; i++){
+        //Build basis swap matrix
+        if (i==target){
+            R[i][q->k] = 1;
+        } else if (i == q->k=1){
+            R[i][target] = 1;
+        } else {
+            R[i][i] = 1;
+        }
+    }
+    qfm_BasisChange(q, R);
+    if (beta != 0){
+        afp_AddVectors(a->h, a->G[a->k]);
+        qfm_ShiftChange(q, a->G[a->k]);
+    }
+    a->k-=1;
+    return SUCCESS;
+}
+
+result lazy_shrink(affine_sp *a, unsigned short *xi, unsigned short alpha)
+{
+    unsigned short S[a->k];
+    unsigned short order_S = 0;
+    for (int i = 0; i < a->k; i++){
+        if (Modulo(InnerProduct(a->k, xi, a->G[i]), 2) == alpha){
+            S[order_S] = i;
+            order_S++;
+        }
+    }
+    unsigned short beta = Modulo(InnerProduct(a->k, xi, a->h), 2);
+    if (S[0] == 0 && beta == 1){
+        return EMPTY;
+    } else if (S[0] == 0 && beta ==1){
+        return SAME;
+    } else {
+        int target = RandomInt(&order_S);
+        for (int i = 0; i < order_S; i++){
+            if (i==target){continue;}
+            afp_AddVectors(a->G[i], a->G[target]);
+            afp_AddVectors(a->Gbar[target], a->GBar[i]);
+        }
+    }
+    afp_SwapVectors(a, target);
+    if (beta != 0){
+        afp_AddVectors(a->h, a->G[a->k]);
+    }
+    a->k-=1;
+    return SUCCESS;
 }

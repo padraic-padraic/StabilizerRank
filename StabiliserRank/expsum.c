@@ -59,8 +59,8 @@ void NonNullS(quadratic_fm *q, unsigned short *set_S, unsigned short *order_S)
         R[i]=(unsigned short *)calloc(q->k, sizeof(unsigned short));
         R[i][i] = 1;
     }
-    target = (int)((double)rand() / ((double)RAND_MAX + 1) * order_S) //Snippet taken from http://c-faq.com/lib/randrange.html
-    for (int i=0; i < order_S; i++){
+    target = RandomInt(order_S);
+    for (int i=0; i < *order_S; i++){
         if (i==target){continue;}
         //Set the correct element of R to 1
         R[set_S[i]][set_S[target]] = 1;
@@ -144,7 +144,6 @@ complex ExponentialSum(quadratic_fm *q)
     unsigned short *monomers[q->k];
     int r=0, M = 0;
     unsigned short order_S = 0;
-    // Calloc ensures memory junk doesn't get thrown in to WSum
     short *set_S = (short *)malloc(q->k*sizeof(int *));
     for (int i=0;i<q->k;i++){S[i]=-1;} //negative values are falsy
     // Populate S
