@@ -57,17 +57,32 @@ unsigned short ** GenerateX(int d, int n)
 
 unsigned short * RandomShiftVector(int n)
 {
-    return;
+    long double r;
+    unsigned short *h = (unsigned short *)calloc(n, sizeof(unsigned short));
+    for (int i = 0; i <n; i++){
+        r = Random();
+        h[i] = r < 0.5 ? 0 : 1;
+    }
+    return h;
 }
 
 unsigned short * RandomD(int n)
 {
-    return;
+    unsigned short *D = (unsigned short *)calloc(n, sizeof(unsigned short));
+    for (int i = 0; i < n; i++){
+        D[i] = Modulo(2* RandInt(4), 8);
+    }
+    return D;
 }
 
 unsigned short ** RandomJ(int n, unsigned short* D)
 {
-    return;
+    unsigned short **J = (unsigned short **)calloc(n, sizeof(unsigned short *));
+    for (int i =0; i<n; i++){
+        J[i] = (unsigned short *)calloc(n, sizeof(unsigned short));
+        J[i][i] = Modulo(2*D[i],8);
+    }
+    return J;
 }
 
 stabiliser random_stab(int n)
