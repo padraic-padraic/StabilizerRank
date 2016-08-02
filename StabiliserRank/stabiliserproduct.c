@@ -8,10 +8,9 @@
 complex stb_InnerProduct(stabiliser *phi1, stabiliser *phi2)
 {
     affine_sp a = afp_Copy(phi1->a); //This won't work. I need to define a copy method
-    quadratic_fm q = qfm_Copy(phi1->q);
     stabiliser stab;
     stab.a = &a;
-    stab.q = &q;
+    stab.q = phi1->q;
     affine_sp *a1 = phi1->a, *a2 = phi2->a;
     quadratic_fm *q1 = phi1->q, *q2 = phi2->q;
     for (int i = a2->k +1; i < a2->n; i++){
@@ -24,8 +23,8 @@ complex stb_InnerProduct(stabiliser *phi1, stabiliser *phi2)
     unsigned short *y = (unsigned short *)calloc(a2->k, sizeof(unsigned short));
     unsigned short *scratch_space = (unsigned short *)calloc(a2->n, sizeof(unsigned short));
     unsigned short res = 0;
-    AddVectors(scratch_space, a1->h);
-    AddVectors(scratch_space, a2->h);
+    AddVectors(a2->n, scratch_space, a1->h);
+    AddVectors(a2->n, scratch_space, a2->h);
     unsigned short **R = (unsigned short **)calloc(a2->n, sizeof(unsigned short*));
     for (int i=0; i<a2->n; i++){R[i] = (unsigned short *)calloc(a2->n, sizeof(unsigned short));}
     for (int i = 0; i < a2->k; i++){

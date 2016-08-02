@@ -138,13 +138,19 @@ void qfm_BasisChange(quadratic_fm *q, unsigned short **R)
     free(res);
 }
 
-void qfm_DeleteIndex(quadratic_fm *q, int target) //Not finished?
+void qfm_DeleteIndex(quadratic_fm *q, int target) 
 {
-    for (int i = target; i < q->k -1; i++){
+    for (int i = target; i < q->k-1; i++){
         q->D[i] = q->D[i+1];
+        for (int j = 0; j < q->k- 1; j++){
+            q->J[i][j] = q->j[i+1][j];
+        }
     }
-    free(q->D[k]);
-    for (int i = 0; i < q->k; i++){free(q->J[i][q->k]);}
+    for (int i = 0; i<q->k; i++){
+        for (int j = target; j<q->k-1; j++){q->J[i][j] = q->J[i][j+1];}
+    }
+    q->D[k] = 0;
+    for (int i = 0; i < q->k; i++){q->J[i][q->k] = 0;}
     free(q->J[q->k]);
     q->k -= 1;
 }
