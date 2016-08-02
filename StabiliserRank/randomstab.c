@@ -35,9 +35,17 @@ int SampleD(int n)
     }
 }
 
-unsigned short ** RandomMatrix(intt d, int n)
+unsigned short ** RandomMatrix(int d, int n)
 {
-    return;
+    long double r;
+    unsigned short **X = (unsigned short **)malloc(d, sizeof(unsigned short *));
+    for (int i = 0; i<d; i++){
+        X[i] = (unsigned short *)calloc(n, sizeof(unsigned short));
+        for (int j = 0; j<n; j++){
+            X[i][j] = r<0.5 ? 0 : 1;
+        }
+    }
+    return X;
 }
 
 unsigned short ** GenerateX(int d, int n)
@@ -77,7 +85,7 @@ unsigned short * RandomD(int n)
 
 unsigned short ** RandomJ(int n, unsigned short* D)
 {
-    unsigned short **J = (unsigned short **)calloc(n, sizeof(unsigned short *));
+    unsigned short **J = (unsigned short **)malloc(n, sizeof(unsigned short *));
     for (int i =0; i<n; i++){
         J[i] = (unsigned short *)calloc(n, sizeof(unsigned short));
         J[i][i] = Modulo(2*D[i],8);
