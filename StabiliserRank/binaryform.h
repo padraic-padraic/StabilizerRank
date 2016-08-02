@@ -25,6 +25,10 @@ typedef {EMPTY, SAME, SUCCESS} result;
 
 int DeleteFromArray(int len; int target, unsigned *arr);
 
+quadratic_fm qfm_Copy(quadratic_fm *q);
+
+affine_sp afp_Copy(affine_sp *a);
+
 unsigned short Modulo(unsigned short val, unsigned short base);
 
 unsigned short InnerProduct(int len, unsigned short *x, unsigned short *y);

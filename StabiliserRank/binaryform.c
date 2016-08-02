@@ -11,6 +11,41 @@ int DeleteFromArray(int len; int target, unsigned *arr)
     arr[len] = -1;
     return len-1;
 }
+quadratic_fm qfm_Copy(quadratic_fm *q){
+    quadratic_fm copy;
+    copy.k = q->k;
+    copy.Q = q->Q;
+    copy.D = (unsigned short *)malloc(copy.k*sizeof(unsigned short));
+    copy.J = (unsigned short **)malloc(copy.k*sizeof(unsigned short *));
+    for (int i = 0; i<copy.k; i++){
+        copy.D[i] = q->D[i];
+        copy.J[i] = (unsigned short*)malloc(copy.k*sizeof(unsigned short));
+        for (int j = 0; j<copy.k; j++){
+            copy.J[i][j] = q->J[i][j];
+        }
+    }
+    return copy
+}
+
+
+affine_sp afp_Copy(affine_sp *a){
+    affine_sp copy;
+    copy.n = a->n;
+    copy.k = a->k;
+    copy.h = (unsigned short *)malloc(copy.n*sizeof(unsigned short));
+    copy.G = (unsigned short **)malloc(copy.n*sizeof(unsigned short *));
+    copy.GBar = (unsigned short **)malloc(copy.n*sizeof(unsigned short *));
+    for (int i = 0; i < copy.n; i++){
+        copy.h[i] = a->h[i];
+        copy.G[i] = (unsigned short *)malloc(copy.n*sizeof(unsigned short));
+        copy.GBar[i] = (unsigned short *)malloc(copy.n*sizeof(unsigned short));
+        for (int j=0; i < copy.n; j++){
+            copy.G[i][j] = a->G[i][j];
+            copy.GBar[i][j] = a->GBar[i][j]
+        }
+    }
+    return copy;
+}
 
 unsigned short Modulo(unsigned short val, unsigned short base)
 {
@@ -106,9 +141,9 @@ void afp_SwapVectors(affine_sp *a, int target)
         scratch_space = a->G[target][i];
         a->G[target][i] = a->G[a->k][i];
         a->G[a->k][i] = scratch_space;
-        scratch_space = a->Gbar[target][i];
-        a->Gbar[target][i] = a->Gbar[a->k][i]
-        a->Gbar[a->k][i] = scratch_space;
+        scratch_space = a->GBar[target][i];
+        a->GBar[target][i] = a->GBar[a->k][i]
+        a->GBar[a->k][i] = scratch_space;
     }
 }
 
@@ -140,7 +175,7 @@ result shrink(stabiliser *phi, unsigned short *xi, unsigned short alpha)
         for (int i = 0; i < order_S; i++){
             if (i==target){continue;}
             afp_AddVectors(a->G[i], a->G[target]);
-            afp_AddVectors(a->Gbar[target], a->GBar[i]);
+            afp_AddVectors(a->GBar[target], a->GBar[i]);
         }
         unsigned short **R = (unsigned short **)calloc(q->k, sizeof(unsigned short*));
         for (int i = 0; i <q->k;i++){
@@ -199,7 +234,7 @@ result lazy_shrink(stabiliser *phi, unsigned short *xi, unsigned short alpha)
         for (int i = 0; i < order_S; i++){
             if (i==target){continue;}
             afp_AddVectors(a->G[i], a->G[target]);
-            afp_AddVectors(a->Gbar[target], a->GBar[i]);
+            afp_AddVectors(a->GBar[target], a->GBar[i]);
         }
     }
     afp_SwapVectors(a, target);
