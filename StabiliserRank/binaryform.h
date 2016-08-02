@@ -49,7 +49,7 @@ void qfm_BasisChange(quadratic_fm *q, unsigned short **R);
 
 void qfm_DeleteRow(quadratic_fm *q, int target);
 
-void afp_AddVectors(unsigned short *v1, unsigned short *v2);
+void AddVectors(unsigned short *v1, unsigned short *v2);
 
 void shrink(stabiliser *phi, unsigned short *xi, unsigned short alpha);
 

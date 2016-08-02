@@ -149,7 +149,7 @@ void qfm_DeleteIndex(quadratic_fm *q, int target) //Not finished?
     q->k -= 1;
 }
 
-void afp_AddVectors(int len, unsigned short *v1, unsigned short *v2)
+void AddVectors(int len, unsigned short *v1, unsigned short *v2)
 {
     for (int i = 0; i < len; i++){
         v1[i] = Modulo(v1[i] + v2[i], 2);
@@ -196,8 +196,8 @@ result shrink(stabiliser *phi, unsigned short *xi, unsigned short alpha)
         int target = RandomInt(&order_S);
         for (int i = 0; i < order_S; i++){
             if (i==target){continue;}
-            afp_AddVectors(a->G[i], a->G[target]);
-            afp_AddVectors(a->GBar[target], a->GBar[i]);
+            AddVectors(a->G[i], a->G[target]);
+            AddVectors(a->GBar[target], a->GBar[i]);
         }
         unsigned short **R = (unsigned short **)calloc(q->k, sizeof(unsigned short*));
         for (int i = 0; i <q->k;i++){
@@ -228,7 +228,7 @@ result shrink(stabiliser *phi, unsigned short *xi, unsigned short alpha)
     }
     qfm_BasisChange(q, R);
     if (beta != 0){
-        afp_AddVectors(a->h, a->G[a->k]);
+        AddVectors(a->h, a->G[a->k]);
         qfm_ShiftChange(q, a->G[a->k]);
     }
     a->k-=1;
@@ -257,13 +257,13 @@ result lazy_shrink(stabiliser *phi, unsigned short *xi, unsigned short alpha)
         int target = RandomInt(&order_S);
         for (int i = 0; i < order_S; i++){
             if (i==target){continue;}
-            afp_AddVectors(a->G[i], a->G[target]);
-            afp_AddVectors(a->GBar[target], a->GBar[i]);
+            AddVectors(a->G[i], a->G[target]);
+            AddVectors(a->GBar[target], a->GBar[i]);
         }
     }
     afp_SwapVectors(a, target);
     if (beta != 0){
-        afp_AddVectors(a->h, a->G[a->k]);
+        AddVectors(a->h, a->G[a->k]);
     }
     a->k-=1;
     return SUCCESS;

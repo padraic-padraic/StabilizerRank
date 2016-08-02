@@ -22,18 +22,28 @@ complex stb_InnerProduct(stabiliser *phi1, stabiliser *phi2)
         }
     }
     unsigned short *y = (unsigned short *)calloc(a2->k, sizeof(unsigned short));
+    unsigned short *scratch_space = (unsigned short *)calloc(a2->n, sizeof(unsigned short));
+    unsigned short res = 0;
+    AddVectors(scratch_space, a1->h);
+    AddVectors(scratch_space, a2->h);
     unsigned short **R = (unsigned short **)calloc(a2->n, sizeof(unsigned short*));
     for (int i=0; i<a2->n; i++){R[i] = (unsigned short *)calloc(a2->n, sizeof(unsigned short));}
     for (int i = 0; i < a2->k; i++){
-        // y[i] = InnerProduct()
+        y[i] = InnerProduct(scratch_space, a2->Gbar[i]);
         for (int j = 0; j < a.k; j++){
             R[j][i] = InnerProduct(a.G[j], a2.GBar[i]);
         }
 
     }
     qfm_BasisChange(q2, R);
+    qfm_ShiftChange(q2, y);
+    for (int i = 0; i<a2->n; i++){a2->h[i] = a1->h[i];}
+    //Cleanup
     for(int i = 0; i<q2->k; i++){free(R[i]);}
+    free(scratch_space);
     free (R);
+    free(y);
+    //Find the final quadratic form q
     q.Q = Modulo(q1->Q - q2->Q, 8);
     for (int i = 0; i < q.K; i++){ //What about if this rolls over negative? Might need to define something to handle this in binaryform
         q.D[i] = Modulo(q1->D[i]-q2->D[i], 8);
