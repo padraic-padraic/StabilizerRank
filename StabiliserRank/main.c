@@ -4,16 +4,7 @@
 #include <complex.h>
 #include <binaryform.h>
 #include <expsum.h>
-
-// void OuterProduct(int len, unsigned short *left, unsigned short *right, unsigned short **target)
-// {
-//     for (int i = 0; i < len; i++){
-//         for (int j = 0; j < len; j++){
-//             target[i][j] = 
-//         }
-//     }
-//     return;
-// }
+#include <stabiliserproduct.h>
 
 int main(){
     //Do nothing

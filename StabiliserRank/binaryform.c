@@ -11,6 +11,7 @@ int DeleteFromArray(int len; int target, unsigned *arr)
     arr[len] = -1;
     return len-1;
 }
+
 quadratic_fm qfm_Copy(quadratic_fm *q){
     quadratic_fm copy;
     copy.k = q->k;
@@ -24,7 +25,7 @@ quadratic_fm qfm_Copy(quadratic_fm *q){
             copy.J[i][j] = q->J[i][j];
         }
     }
-    return copy
+    return copy;
 }
 
 
@@ -68,24 +69,27 @@ void LeftMultiply(int len, unsigned short **R, unsigned short *x, unsigned short
     }
     for (int i = 0; i < len; i++){target[i] = res[i];}
 }
-void transpose(int len, unsigned short **mat, unsigned short **target)
-{
+
+unsigned short ** transpose(int len, unsigned short **mat)
+{   unsigned short **res = (unsigned short **)malloc(len*sizeof(unsigned short*));
+    for (int i = 0; i <len; i++){res[i] = (unsigned short *)malloc(len*sizeof(unsigned short));}
     for (int i = 0; i < len; i++){
         for (int j = 0; j < len; j++){
-            target[i][j] = mat[j][i];
+            res[i][j] = mat[j][i];
         }
     }
+    return res;
 }
 void MatrixMultiply(int len, unsigned short **left, unsigned short **right, unsigned short ** target)
 {
     unsigned short **trans;
-    transpose(len, right, trans);
+    trans = transpose(len, right);
     for (int i = 0; i < len; i++){
         for (int j = 0; j < len; j++){
             target[i][j] = Modulo(InnerProduct(left[i], trans[j]), 8)
         }
     }
-}
+} // Double check this? I think it works? Clever!
 
 unsigned short DBasisChange(int len, int index, unsigned short **J, unsigned short **R)
 {
@@ -98,25 +102,43 @@ unsigned short DBasisChange(int len, int index, unsigned short **J, unsigned sho
     return res;
 }
 
-unsigned short qfm_ShiftChange(int len, unsigned short **J, unsigned short *y)
+
+void qfm_ShiftChange(quadratic_fm *q, unsigned short *y)
 {
     unsigned short res = 0;
-    for (int i = 0; i < len; i++){
-        for (int j=i ; j < len; j++){
-            res += J[i][j]*y[i]*y[j];
+    for (int i = 0; i<q->k; i++){res += D[i]*y[i];}
+    for (int i = 0; i<q->k; i++){
+        for (int j=i; j<q->k; j++){
+            res += q->J[i][j]*y[i]*y[j];
         }
     }
-    return res;
+    q->Q = Modulo(q->Q+res, 8);
+    for (int i=0; i<q->k; i++){
+        res = 0;
+        for(int j = 0; j< q->k; j++){
+            res += q->J[i][j]*y[j];
+        }
+        q->D[i] = Modulo(q->D[i]+res, 8);
+    }
 }
 
-void qfm_BasisChange(quadratic_fm *q, unsigned short **R){
-    LeftMultiply(q->k, R, q->D, q->D);
+void qfm_BasisChange(quadratic_fm *q, unsigned short **R)
+{
+    LeftMultiply(q->k, R, q->D, q->D, 8);
     for (int i=0; i < len; i++){
         q->D[i] += Modulo(DBasisChange(len, i, q->J, R), 8);
     }
+    unsigned short **res = (unsigned short**)calloc(q->k, sizeof(unsigned short *))p;
+    for (int i = 0; i <q->k; i++){res[i] = (unsigned short *)calloc(q->k, sizeof(unsigned short));}
+    MatrixMultiply(q->k, q->J, transpose(R), res);
+    MatrixMultiply(q->k, R, res, q->J);
+    for (int i = 0; i<q->k; i++){
+        free(res[i]);
+    }
+    free(res);
 }
 
-void qfm_DeleteIndex(quadratic_fm *q, int target)
+void qfm_DeleteIndex(quadratic_fm *q, int target) //Not finished?
 {
     for (int i = target; i < q->k -1; i++){
         q->D[i] = q->D[i+1];
@@ -188,12 +210,12 @@ result shrink(stabiliser *phi, unsigned short *xi, unsigned short alpha)
             R[S[i]][S[target]] = 1;
         }
         qfm_BasisChange(q, R);
-        //Reset the transformation matrix
-        for (int i =0; i < q->k; i++){
-            for (int j=0; j < q->k; j++){R[i][j] = 0;}
-        }
     }
     afp_SwapVectors(a, target);
+    //Reset the transformation matrix
+        for (int i =0; i < q->k; i++){
+            for (int j=0; j < q->k; j++){R[i][j] = 0;}
+    }
     for (int i = 0; i < q->k; i++){
         //Build basis swap matrix
         if (i==target){
@@ -210,6 +232,8 @@ result shrink(stabiliser *phi, unsigned short *xi, unsigned short alpha)
         qfm_ShiftChange(q, a->G[a->k]);
     }
     a->k-=1;
+    for (int i = 0; i<q->k; i++){free(R[i]);}
+    free(R);
     return SUCCESS;
 }
 

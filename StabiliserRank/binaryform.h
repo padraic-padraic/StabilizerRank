@@ -35,7 +35,7 @@ unsigned short InnerProduct(int len, unsigned short *x, unsigned short *y);
 
 void LeftMultiply(int len, unsigned short **R, unsigned short *x, unsigned short *target, unsigned short base);
 
-void transpose(int len, unsigned short **mat, unsigned short **target);
+unsigned short ** transpose(int len, unsigned short **mat, unsigned short **target);
 
 void MatrixMultiply(int len, unsigned short **left, unsigned short **right, unsigned short ** target);
 
@@ -43,17 +43,17 @@ int RandomInt(int max);
 
 unsigned short DBasisChange(int len, int index, unsigned short **J, unsigned short **R);
 
-unsigned short qfm_ShiftChange(int len, unsigned short **J, unsigned short *y);
-
 void qfm_ShiftChange(quadratic_fm *q, unsigned short *y);
+
+void qfm_BasisChange(quadratic_fm *q, unsigned short **R);
 
 void qfm_DeleteRow(quadratic_fm *q, int target);
 
 void afp_AddVectors(unsigned short *v1, unsigned short *v2);
 
-void shrink(affine_sp *a, quadratic_fm *q, unsigned short *xi, unsigned short alpha);
+void shrink(stabiliser *phi, unsigned short *xi, unsigned short alpha);
 
-void lazy_shrink(affine_sp *a, unsigned short *xi, unsigned short alpha);
+void lazy_shrink(stabiliser *phi, unsigned short *xi, unsigned short alpha);
 
 #endif
 
