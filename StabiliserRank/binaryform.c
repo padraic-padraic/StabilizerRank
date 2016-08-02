@@ -175,7 +175,7 @@ void afp_SwapVectors(affine_sp *a, int target)
     }
 }
 
-int RandomInt(unsigned short *len)
+int RandomIntInRange(unsigned short *len)
 {    
     int target = (int)((double)rand() / ((double)RAND_MAX + 1) * (*order_S)); //Snippet taken from http://c-faq.com/lib/randrange.html
     return target;

@@ -5,6 +5,7 @@
 #include <binaryform.h>
 #include <expsum.h>
 #include <stabiliserproduct.h>
+#include <randomstab.h>
 
 int main(){
     //Do nothing

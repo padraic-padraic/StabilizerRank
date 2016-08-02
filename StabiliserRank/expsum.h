@@ -1,5 +1,6 @@
 #ifndef EXPSUM_H
 #define EXPSUM_H
+#include <complex.h>
 #include <binaryform.h>
 complex WSum(quadratic_fm *q, int r, unsigned short **dimers, int M, unsigned short *monomers, short S);
 
