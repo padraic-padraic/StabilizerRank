@@ -48,6 +48,25 @@ unsigned short ** RandomMatrix(int d, int n)
     return X;
 }
 
+int Rank(unsigned short **X) // Based on methods discussed here https://groups.google.com/forum/?hl=en#!topic/comp.lang.c/6afkseBMcnk as part of the diehard RNG tests
+{
+    bool found_something;
+    int r = 0;
+    for (int i = 0; i < d; i++){
+        found_something = false;
+        for (int j = r; j<n; j++){
+            if (X[j][d-i] == 1){
+                if (found_something == false){
+                    found_something == true;
+                    for (int k = 0; k<n; k++){X[j][i] = X[r][i];}
+                    r++;
+                }
+            }
+        }
+    }
+    return r;
+}
+
 unsigned short ** GenerateX(int d, int n)
 {
     while (true){

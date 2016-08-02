@@ -12,6 +12,8 @@ unsigned short ** RandomMatrix(intt d, int n);
 
 unsigned short ** GenerateX(int d, int n);
 
+int Rank(unsigned short **X);
+
 unsigned short * RandomShiftVector(int n);
 
 unsigned short * RandomD(int n);
