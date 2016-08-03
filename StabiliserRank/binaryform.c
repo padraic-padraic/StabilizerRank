@@ -3,7 +3,7 @@
 #include <complex.h>
 #include <binaryform.h>
 
-int DeleteFromArray(int len; int target, unsigned *arr)
+int DeleteFromArray(int len; int target, *arr)
 {
     for (int i = target; i<len-1; i++){
         arr[i]=arr[i+1];
@@ -16,11 +16,11 @@ quadratic_fm qfm_Copy(quadratic_fm *q){
     quadratic_fm copy;
     copy.k = q->k;
     copy.Q = q->Q;
-    copy.D = (unsigned short *)malloc(copy.k*sizeof(unsigned short));
-    copy.J = (unsigned short **)malloc(copy.k*sizeof(unsigned short *));
+    copy.D = (short *)malloc(copy.k*sizeof(short));
+    copy.J = (short **)malloc(copy.k*sizeof(short *));
     for (int i = 0; i<copy.k; i++){
         copy.D[i] = q->D[i];
-        copy.J[i] = (unsigned short*)malloc(copy.k*sizeof(unsigned short));
+        copy.J[i] = (short*)malloc(copy.k*sizeof(short));
         for (int j = 0; j<copy.k; j++){
             copy.J[i][j] = q->J[i][j];
         }
@@ -33,13 +33,13 @@ affine_sp afp_Copy(affine_sp *a){
     affine_sp copy;
     copy.n = a->n;
     copy.k = a->k;
-    copy.h = (unsigned short *)malloc(copy.n*sizeof(unsigned short));
-    copy.G = (unsigned short **)malloc(copy.n*sizeof(unsigned short *));
-    copy.GBar = (unsigned short **)malloc(copy.n*sizeof(unsigned short *));
+    copy.h = (short *)malloc(copy.n*sizeof(short));
+    copy.G = (short **)malloc(copy.n*sizeof(short *));
+    copy.GBar = (short **)malloc(copy.n*sizeof(short *));
     for (int i = 0; i < copy.n; i++){
         copy.h[i] = a->h[i];
-        copy.G[i] = (unsigned short *)malloc(copy.n*sizeof(unsigned short));
-        copy.GBar[i] = (unsigned short *)malloc(copy.n*sizeof(unsigned short));
+        copy.G[i] = (short *)malloc(copy.n*sizeof(short));
+        copy.GBar[i] = (short *)malloc(copy.n*sizeof(short));
         for (int j=0; i < copy.n; j++){
             copy.G[i][j] = a->G[i][j];
             copy.GBar[i][j] = a->GBar[i][j]
@@ -48,11 +48,13 @@ affine_sp afp_Copy(affine_sp *a){
     return copy;
 }
 
-unsigned short Modulo(unsigned short val, unsigned short base)
+short Modulo(short val, short base)
 {
-    return val & base;
+    short res = val&base;
+    res = res < 0 ? -1*res : res;
+    return res;
 }
-unsigned short InnerProduct(int len, unsigned short *x, unsigned short *y)
+short InnerProduct(int len, short *x, short *y)
 {
     short res = 0;
     for (int i = 0; i < len; i++){
@@ -61,18 +63,18 @@ unsigned short InnerProduct(int len, unsigned short *x, unsigned short *y)
     return res;
 }
 
-void LeftMultiply(int len, unsigned short **R, unsigned short *x, unsigned short *target, unsigned short base)
+void LeftMultiply(int len, short **R, short *x, short *target, short base)
 {
-    unsigned short res[len]
+    short res[len]
     for (int i = 0; i < len; i++){
         res[i] = Modulo(InnerProduct(len, R[i], x), base);
     }
     for (int i = 0; i < len; i++){target[i] = res[i];}
 }
 
-unsigned short ** transpose(int len, unsigned short **mat)
-{   unsigned short **res = (unsigned short **)malloc(len*sizeof(unsigned short*));
-    for (int i = 0; i <len; i++){res[i] = (unsigned short *)malloc(len*sizeof(unsigned short));}
+short ** transpose(int len, short **mat)
+{   short **res = (short **)malloc(len*sizeof(short*));
+    for (int i = 0; i <len; i++){res[i] = (short *)malloc(len*sizeof(short));}
     for (int i = 0; i < len; i++){
         for (int j = 0; j < len; j++){
             res[i][j] = mat[j][i];
@@ -80,9 +82,9 @@ unsigned short ** transpose(int len, unsigned short **mat)
     }
     return res;
 }
-void MatrixMultiply(int len, unsigned short **left, unsigned short **right, unsigned short ** target)
+void MatrixMultiply(int len, short **left, short **right, short ** target)
 {
-    unsigned short **trans;
+    short **trans;
     trans = transpose(len, right);
     for (int i = 0; i < len; i++){
         for (int j = 0; j < len; j++){
@@ -91,9 +93,9 @@ void MatrixMultiply(int len, unsigned short **left, unsigned short **right, unsi
     }
 } // Double check this? I think it works? Clever!
 
-unsigned short DBasisChange(int len, int index, unsigned short **J, unsigned short **R)
+short DBasisChange(int len, int index, short **J, short **R)
 {
-    unsigned short res = 0;
+    short res = 0;
     for (int i=0; i < len-1; i++){
         for (int j=i ; j < len; j++){
             res += J[i][j]*R[index][i]*R[index][j];
@@ -103,9 +105,9 @@ unsigned short DBasisChange(int len, int index, unsigned short **J, unsigned sho
 }
 
 
-void qfm_ShiftChange(quadratic_fm *q, unsigned short *y)
+void qfm_ShiftChange(quadratic_fm *q, short *y)
 {
-    unsigned short res = 0;
+    short res = 0;
     for (int i = 0; i<q->k; i++){res += D[i]*y[i];}
     for (int i = 0; i<q->k; i++){
         for (int j=i; j<q->k; j++){
@@ -122,14 +124,14 @@ void qfm_ShiftChange(quadratic_fm *q, unsigned short *y)
     }
 }
 
-void qfm_BasisChange(quadratic_fm *q, unsigned short **R)
+void qfm_BasisChange(quadratic_fm *q, short **R)
 {
     LeftMultiply(q->k, R, q->D, q->D, 8);
     for (int i=0; i < len; i++){
         q->D[i] += Modulo(DBasisChange(len, i, q->J, R), 8);
     }
-    unsigned short **res = (unsigned short**)calloc(q->k, sizeof(unsigned short *))p;
-    for (int i = 0; i <q->k; i++){res[i] = (unsigned short *)calloc(q->k, sizeof(unsigned short));}
+    short **res = (short**)calloc(q->k, sizeof(short *))p;
+    for (int i = 0; i <q->k; i++){res[i] = (short *)calloc(q->k, sizeof(short));}
     MatrixMultiply(q->k, q->J, transpose(R), res);
     MatrixMultiply(q->k, R, res, q->J);
     for (int i = 0; i<q->k; i++){
@@ -155,7 +157,7 @@ void qfm_DeleteIndex(quadratic_fm *q, int target)
     q->k -= 1;
 }
 
-void AddVectors(int len, unsigned short *v1, unsigned short *v2)
+void AddVectors(int len, short *v1, short *v2)
 {
     for (int i = 0; i < len; i++){
         v1[i] = Modulo(v1[i] + v2[i], 2);
@@ -164,7 +166,7 @@ void AddVectors(int len, unsigned short *v1, unsigned short *v2)
 
 void shrink_SwapVectors(affine_sp *a, int target)
 {
-    unsigned short scratch_space;
+    short scratch_space;
     for (int i = 0; i < a->n; i++){
         scratch_space = a->G[target][i];
         a->G[target][i] = a->G[a->k][i];
@@ -177,7 +179,7 @@ void shrink_SwapVectors(affine_sp *a, int target)
 
 void extend_SwapVectors(affine_sp *a, int target)
 {
-    unsigned short scratch_space;
+    short scratch_space;
     for (int i = 0; i < a->n; i++){
         scratch_space = a->G[target][i];
         a->G[target][i] = a->G[a->k+1][i];
@@ -189,25 +191,25 @@ void extend_SwapVectors(affine_sp *a, int target)
 }
 
 
-int RandomIntInRange(unsigned short *len)
+int RandomIntInRange(short *len)
 {    
     int target = (int)((double)rand() / ((double)RAND_MAX + 1) * (*order_S)); //Snippet taken from http://c-faq.com/lib/randrange.html
     return target;
 }
 
-result shrink(stabiliser *phi, unsigned short *xi, unsigned short alpha)
+shrink_result shrink(stabiliser *phi, short *xi, short alpha)
 {
     affine_sp *a = phi->a;
     quadratic_fm *q = phi->q;
-    unsigned short S[a->k];
-    unsigned short order_S = 0;
+    short S[a->k];
+    short order_S = 0;
     for (int i = 0; i < a->k; i++){
         if (Modulo(InnerProduct(a->k, xi, a->G[i]), 2) == alpha){
             S[order_S] = i;
             order_S++;
         }
     }
-    unsigned short beta = Modulo(InnerProduct(a->k, xi, a->h), 2);
+    short beta = Modulo(InnerProduct(a->k, xi, a->h), 2);
     if (S[0] == 0 && beta == 1){
         return EMPTY;
     } else if (S[0] == 0 && beta ==1){
@@ -219,9 +221,9 @@ result shrink(stabiliser *phi, unsigned short *xi, unsigned short alpha)
             AddVectors(a->G[i], a->G[target]);
             AddVectors(a->GBar[target], a->GBar[i]);
         }
-        unsigned short **R = (unsigned short **)calloc(q->k, sizeof(unsigned short*));
+        short **R = (short **)calloc(q->k, sizeof(short*));
         for (int i = 0; i <q->k;i++){
-            R[i]=(unsigned short *)calloc(q->k, sizeof(unsigned short));
+            R[i]=(short *)calloc(q->k, sizeof(short));
             R[i][i] = 1;
         }
         for (int i=0; i < order_S; i++){
@@ -257,18 +259,18 @@ result shrink(stabiliser *phi, unsigned short *xi, unsigned short alpha)
     return SUCCESS;
 }
 
-result lazy_shrink(stabiliser *phi, unsigned short *xi, unsigned short alpha)
+shrink_result lazy_shrink(stabiliser *phi, short *xi, short alpha)
 {
     affine_sp *a = phi->a;
-    unsigned short S[a->k];
-    unsigned short order_S = 0;
+    short S[a->k];
+    short order_S = 0;
     for (int i = 0; i < a->k; i++){
         if (Modulo(InnerProduct(phi->a.k, xi, a->G[i]), 2) == alpha){
             S[order_S] = i;
             order_S++;
         }
     }
-    unsigned short beta = Modulo(InnerProduct(phi->a.k, xi, a->h), 2);
+    short beta = Modulo(InnerProduct(phi->a.k, xi, a->h), 2);
     if (S[0] == 0 && beta == 1){
         return EMPTY;
     } else if (S[0] == 0 && beta ==1){
@@ -289,7 +291,7 @@ result lazy_shrink(stabiliser *phi, unsigned short *xi, unsigned short alpha)
     return SUCCESS;
 }
 
-void extend(affine_sp *a, unsigned short *xi)
+void extend(affine_sp *a, short *xi)
 {
     short *S[a->n];
     for (int i = 0; i<n; i++){S[i]=-1;}
@@ -313,9 +315,9 @@ void extend(affine_sp *a, unsigned short *xi)
         return; //Extend has failed
     }
     short i = T[RandInt(order_T)];
-    unsigned short **R = (unsigned short**)malloc(a->n, sizeof(unsigned short *));
+    short **R = (short**)malloc(a->n, sizeof(short *));
     for (int i = 0; i<a->n; i++){
-        R[i]=(unsigned short *)calloc(a->n, sizeof(unsigned short));
+        R[i]=(short *)calloc(a->n, sizeof(short));
         R[i][i] = 1;
     }
     for (int j = 0; j<order_S; j++){

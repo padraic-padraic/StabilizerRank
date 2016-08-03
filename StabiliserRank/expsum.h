@@ -2,11 +2,11 @@
 #define EXPSUM_H
 #include <complex.h>
 #include <binaryform.h>
-complex WSum(quadratic_fm *q, int r, unsigned short **dimers, int M, unsigned short *monomers, short S);
+complex WSum(quadratic_fm *q, int r,short **dimers, int M,short *monomers, short S);
 
-void NonNullS(quadratic_fm *q, unsigned short *set_S, unsigned short *order_S);
+void NonNullS(quadratic_fm *q,short *set_S,short *order_S);
 
-void PartitionBasis(quadratic_fm *q, unsigned short **dimers, unsigned short *monomers, short S);
+void PartitionBasis(quadratic_fm *q,short **dimers,short *monomers, short S);
 
 complex ExponentialSum(quadratic_fm *q);
 #endif

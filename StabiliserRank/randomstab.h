@@ -8,17 +8,17 @@ long double Random(void);
 
 int SampleD(int n);
 
-unsigned short ** RandomMatrix(intt d, int n);
+short ** RandomMatrix(intt d, int n);
 
-unsigned short ** GenerateX(int d, int n);
+short ** GenerateX(int d, int n);
 
-int Rank(unsigned short **X);
+int Rank(short **X);
 
-unsigned short * RandomShiftVector(int n);
+short * RandomShiftVector(int n);
 
-unsigned short * RandomD(int n);
+short * RandomD(int n);
 
-unsigned short ** RandomJ(int n, unsigned short *D); 
+short ** RandomJ(int n, short *D); 
 
 stabiliser random_stab(int n);
 

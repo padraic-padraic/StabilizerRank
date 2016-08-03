@@ -20,13 +20,13 @@ complex stb_InnerProduct(stabiliser *phi1, stabiliser *phi2)
             return (complex) 0;
         }
     }
-    unsigned short *y = (unsigned short *)calloc(a2->k, sizeof(unsigned short));
-    unsigned short *scratch_space = (unsigned short *)calloc(a2->n, sizeof(unsigned short));
-    unsigned short res = 0;
+    short *y = (short *)calloc(a2->k, sizeof(short));
+    short *scratch_space = (short *)calloc(a2->n, sizeof(short));
+    short res = 0;
     AddVectors(a2->n, scratch_space, a1->h);
     AddVectors(a2->n, scratch_space, a2->h);
-    unsigned short **R = (unsigned short **)calloc(a2->n, sizeof(unsigned short*));
-    for (int i=0; i<a2->n; i++){R[i] = (unsigned short *)calloc(a2->n, sizeof(unsigned short));}
+    short **R = (short **)calloc(a2->n, sizeof(short*));
+    for (int i=0; i<a2->n; i++){R[i] = (short *)calloc(a2->n, sizeof(short));}
     for (int i = 0; i < a2->k; i++){
         y[i] = InnerProduct(scratch_space, a2->Gbar[i]);
         for (int j = 0; j < a.k; j++){

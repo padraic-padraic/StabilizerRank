@@ -4,7 +4,7 @@
 #include <bianryform.h>
 #include <expsum.h>
 
-complex WSum(quadratic_fm *q, int r, unsigned short **dimers, int M, unsigned short *monomers, short S)
+complex WSum(quadratic_fm *q, int r, short **dimers, int M, short *monomers, short S)
 {
      //Exp of Q
     complex res= cexp(I*M_PI/4*q->Q); 
@@ -50,13 +50,13 @@ complex WSum(quadratic_fm *q, int r, unsigned short **dimers, int M, unsigned sh
     }
 }
 
-void NonNullS(quadratic_fm *q, unsigned short *set_S, unsigned short *order_S)
+void NonNullS(quadratic_fm *q, short *set_S, short *order_S)
 {
     int target=-1;
     //Prepare the transformation matrix, initially as the Identity
-    unsigned short **R = (unsigned short **)calloc(q->k, sizeof(unsigned short*));
+    short **R = (short **)calloc(q->k, sizeof(short*));
     for (int i = 0; i <q->k;i++){
-        R[i]=(unsigned short *)calloc(q->k, sizeof(unsigned short));
+        R[i]=(short *)calloc(q->k, sizeof(short));
         R[i][i] = 1;
     }
     target = RandomInt(order_S);
@@ -71,15 +71,15 @@ void NonNullS(quadratic_fm *q, unsigned short *set_S, unsigned short *order_S)
     *order_S = 1;
 }
 
-void PartitionBasis(quadratic_fm *q, unsigned short **dimers, unsigned short *monomers, short S)
+void PartitionBasis(quadratic_fm *q, short **dimers, short *monomers, short S)
 {
     short order_E = q->k;
     if (S >-1){order_E--;}
     short *E[order_E];
     short *K[order_E];
-    unsigned short **R = (unsigned short *)calloc(q->k*sizeof(unsigned short*));
+    short **R = (short *)calloc(q->k*sizeof(short*));
     for(int i =0; i <q->k; i++){
-        R[i]= (unsigned short)calloc(q->k*)*sizeof(unsigned short);
+        R[i]= (short)calloc(q->k*)*sizeof(short);
         R[i][i]=1;
     }
     int count = 0, target, target_2, k_count=0, order_M=0, r=0;
@@ -99,7 +99,7 @@ void PartitionBasis(quadratic_fm *q, unsigned short **dimers, unsigned short *mo
             }
         }
         if (k_count==0){
-            M[order_M]=(unsigned short)target;
+            M[order_M]=(short)target;
             order_M +=1
             order_E = DeleteFromArray(order_E, target, E);
         }
@@ -138,16 +138,16 @@ void PartitionBasis(quadratic_fm *q, unsigned short **dimers, unsigned short *mo
 complex ExponentialSum(quadratic_fm *q)
 {
     //Init structures to store dimers, monomers
-    unsigned short **dimers;
-    dimers = (unsigned short **)malloc(q->k*sizeof(unsigned short *));
-    for (int i = 0; i < q->k; i++){dimers[i] = (unsigned short*)malloc(2*sizeof(unsigned short));}
-    unsigned short *monomers[q->k];
+    short **dimers;
+    dimers = (short **)malloc(q->k*sizeof(short *));
+    for (int i = 0; i < q->k; i++){dimers[i] = (short*)malloc(2*sizeof(short));}
+    short *monomers[q->k];
     int r=0, M = 0;
-    unsigned short order_S = 0;
+    short order_S = 0;
     short *set_S = (short *)malloc(q->k*sizeof(int *));
     for (int i=0;i<q->k;i++){S[i]=-1;} //negative values are falsy
     // Populate S
-    for (unsigned short i=0; i < q->k; i++){
+    for (short i=0; i < q->k; i++){
         if (q->D[i] == 2 || q->D[i] == 6){
             set_S[order_S] = i;
             order_S++;   

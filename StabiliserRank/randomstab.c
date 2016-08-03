@@ -35,12 +35,12 @@ int SampleD(int n)
     }
 }
 
-unsigned short ** RandomMatrix(int d, int n)
+short ** RandomMatrix(int d, int n)
 {
     long double r;
-    unsigned short **X = (unsigned short **)malloc(d, sizeof(unsigned short *));
+    short **X = (short **)malloc(d, sizeof(short *));
     for (int i = 0; i<d; i++){
-        X[i] = (unsigned short *)calloc(n, sizeof(unsigned short));
+        X[i] = (short *)calloc(n, sizeof(short));
         for (int j = 0; j<n; j++){
             X[i][j] = r<0.5 ? 0 : 1;
         }
@@ -48,7 +48,7 @@ unsigned short ** RandomMatrix(int d, int n)
     return X;
 }
 
-int Rank(unsigned short **X) // Based on methods discussed here https://groups.google.com/forum/?hl=en#!topic/comp.lang.c/6afkseBMcnk as part of the diehard RNG tests
+int Rank(short **X) // Based on methods discussed here https://groups.google.com/forum/?hl=en#!topic/comp.lang.c/6afkseBMcnk as part of the diehard RNG tests
 {
     bool found_something;
     int r = 0;
@@ -67,10 +67,10 @@ int Rank(unsigned short **X) // Based on methods discussed here https://groups.g
     return r;
 }
 
-unsigned short ** GenerateX(int d, int n)
+short ** GenerateX(int d, int n)
 {
     while (true){
-        unsigned short **X = RandomMatrix(d, n);
+        short **X = RandomMatrix(d, n);
         if (Rank(X) == d) {
             return X;
         } else {
@@ -82,10 +82,10 @@ unsigned short ** GenerateX(int d, int n)
     }
 }
 
-unsigned short * RandomShiftVector(int n)
+short * RandomShiftVector(int n)
 {
     long double r;
-    unsigned short *h = (unsigned short *)calloc(n, sizeof(unsigned short));
+    short *h = (short *)calloc(n, sizeof(short));
     for (int i = 0; i <n; i++){
         r = Random();
         h[i] = r < 0.5 ? 0 : 1;
@@ -93,20 +93,20 @@ unsigned short * RandomShiftVector(int n)
     return h;
 }
 
-unsigned short * RandomD(int n)
+short * RandomD(int n)
 {
-    unsigned short *D = (unsigned short *)calloc(n, sizeof(unsigned short));
+    short *D = (short *)calloc(n, sizeof(short));
     for (int i = 0; i < n; i++){
         D[i] = Modulo(2* RandInt(4), 8);
     }
     return D;
 }
 
-unsigned short ** RandomJ(int n, unsigned short* D)
+short ** RandomJ(int n, short* D)
 {
-    unsigned short **J = (unsigned short **)malloc(n, sizeof(unsigned short *));
+    short **J = (short **)malloc(n, sizeof(short *));
     for (int i =0; i<n; i++){
-        J[i] = (unsigned short *)calloc(n, sizeof(unsigned short));
+        J[i] = (short *)calloc(n, sizeof(short));
         J[i][i] = Modulo(2*D[i],8);
     }
     return J;
@@ -116,16 +116,16 @@ stabiliser random_stab(int n)
 {
     int d = SampleD(n);
     int k = n-d;
-    unsigned short **X = GenerateX(d, n);
+    short **X = GenerateX(d, n);
     affine_sp a;
     a.n = n;
     a.k = k;
-    a.h = (unsigned short*)calloc(a.n, sizeof(unsigned short));
-    a.G = (unsigned short **)malloc(a.n*sizeof(unsigned short *));
-    a.GBar = (unsigned short **)malloc(a.n*sizeof(unsigned short *));
+    a.h = (short*)calloc(a.n, sizeof(short));
+    a.G = (short **)malloc(a.n*sizeof(short *));
+    a.GBar = (short **)malloc(a.n*sizeof(short *));
     for (int i = 0; i<a.n; i++){
-        a.G[i] = (unsigned short *)calloc(a.n, sizeof(unsigned short));
-        a.GBar[i] = (unsigned short *)calloc(a.n, sizeof(unsigned short));
+        a.G[i] = (short *)calloc(a.n, sizeof(short));
+        a.GBar[i] = (short *)calloc(a.n, sizeof(short));
         a.G[i][i] = 1;
         a.Gbar[i][i] = 1;
     }
