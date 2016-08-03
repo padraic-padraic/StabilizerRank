@@ -164,32 +164,18 @@ void AddVectors(int len, short *v1, short *v2)
     }
 }
 
-void shrink_SwapVectors(affine_sp *a, int target)
+void SwapVectors(affine_sp *a, int target1, int target2)
 {
     short scratch_space;
     for (int i = 0; i < a->n; i++){
-        scratch_space = a->G[target][i];
-        a->G[target][i] = a->G[a->k][i];
-        a->G[a->k][i] = scratch_space;
-        scratch_space = a->GBar[target][i];
-        a->GBar[target][i] = a->GBar[a->k][i]
-        a->GBar[a->k][i] = scratch_space;
+        scratch_space = a->G[target1][i];
+        a->G[target1][i] = a->G[target2][i];
+        a->G[target2][i] = scratch_space;
+        scratch_space = a->GBar[target1][i];
+        a->GBar[target1][i] = a->GBar[target2][i]
+        a->GBar[target2][i] = scratch_space;
     }
 }
-
-void extend_SwapVectors(affine_sp *a, int target)
-{
-    short scratch_space;
-    for (int i = 0; i < a->n; i++){
-        scratch_space = a->G[target][i];
-        a->G[target][i] = a->G[a->k+1][i];
-        a->G[a->k+1][i] = scratch_space;
-        scratch_space = a->GBar[target][i];
-        a->GBar[target][i] = a->GBar[a->k +1][i]
-        a->GBar[a->k +1][i] = scratch_space;
-    }
-}
-
 
 int RandomIntInRange(short *len)
 {    
@@ -233,7 +219,7 @@ shrink_result shrink(stabiliser *phi, short *xi, short alpha)
         }
         qfm_BasisChange(q, R);
     }
-    shrink_SwapVectors(a, target);
+    SwapVectors(a, target, a->k);
     //Reset the transformation matrix
         for (int i =0; i < q->k; i++){
             for (int j=0; j < q->k; j++){R[i][j] = 0;}
@@ -283,7 +269,7 @@ shrink_result lazy_shrink(stabiliser *phi, short *xi, short alpha)
             AddVectors(a->GBar[target], a->GBar[i]);
         }
     }
-    shrink_SwapVectors(a, target);
+    SwapVectors(a, target, a->k);
     if (beta != 0){
         AddVectors(a->h, a->G[a->k]);
     }
@@ -325,7 +311,7 @@ void extend(affine_sp *a, short *xi)
         AddVectors(a->GBar[j], a->GBar[i]);
     }
     a->G[i] = xi;
-    extend_SwapVectors(a, i);
+    SwapVectors(a, i, a->k+1);
     a->k+=1;
     return;
 }

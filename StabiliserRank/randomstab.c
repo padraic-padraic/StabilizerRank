@@ -109,6 +109,7 @@ short ** RandomJ(int n, short* D)
         J[i] = (short *)calloc(n, sizeof(short));
         J[i][i] = Modulo(2*D[i],8);
     }
+    //TODO off diagonals
     return J;
 }
 

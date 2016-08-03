@@ -44,7 +44,7 @@ complex stb_InnerProduct(stabiliser *phi1, stabiliser *phi2)
     free(y);
     //Find the final quadratic form q
     q.Q = Modulo(q1->Q - q2->Q, 8);
-    for (int i = 0; i < q.K; i++){ //What about if this rolls over negative? Might need to define something to handle this in binaryform
+    for (int i = 0; i < q.K; i++){ 
         q.D[i] = Modulo(q1->D[i]-q2->D[i], 8);
         for (int j = 0; j<q.k; j++){
             q.J[i][j] = Modulo(q1->J[i][j] - q2->J[i][j], 8);

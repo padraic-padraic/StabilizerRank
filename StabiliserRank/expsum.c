@@ -106,7 +106,7 @@ void PartitionBasis(quadratic_fm *q, short **dimers, short *monomers, short S)
         else{
             target_2 = K[(int)((double)rand() / ((double)RAND_MAX + 1) * order_K)];
             for (int i=0; i<order_E; i++){
-                if (i==target || i ==target_2){continue;}
+                if (i==target || i == target_2){continue;}
                 //Fill R matrix - TODO
             }
             qfm_BasisChange(q, R);

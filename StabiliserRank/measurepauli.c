@@ -36,7 +36,25 @@ long double MeasurePauli(stabiliser *phi, pauli *p)
     }
     if (EqualVectors(a->k, p->xi, xi_prime)){
         extend(a, p->xi);
-        //blah blah blah
+        //Update D somehow what?
+        J = q->J;
+        short **J_prime = (short **)malloc(q->k+1 * sizeof(short*));
+        for (int i = 0; i < q->k+1; i++){
+            J_prime[i] = (short)calloc(q->k+1, sizeof(short));
+            if (i < q->k){
+                for (int j = 0; j < q->k; j++){
+                    J_prime[i][j] = J[i][j];
+                }
+            }
+        }
+        for(int i = 0; i < q->k; i++){
+            J_prime[q->k+1][i] = Modulo(4*p->zeta[i], 8);
+            J_prime[i][q->k+1] = Modulo(4*p->zeta[i], 8);
+            free(J[i]);
+        }
+        J_prime[q->k+1][q->k+1] = Modulo(4*m, 8);
+        q->J = J_prime;
+        q->k++;
         return 1./sqrt(2);
     } else {
         if (w==0 || w == 4){
@@ -57,10 +75,15 @@ long double MeasurePauli(stabiliser *phi, pauli *p)
                 return 1./sqrt(2);
             }
         } else { //w = 2, 6
-            if (w == 6){
-                // Alert alert. Subtracting will not play well with vars; should I make verything signed and then, if negative, change to 8-var?
-                q->Q = Q-1;
-                for (int i = 0; i < q->k; i++){D[i]-= 2*eta[i];}
+            short sigma = 2 - (w/2);
+            q->Q = Modulo(q->Q+sigma,2);
+            for (int i = 0; i < q->k; i++){
+                q->D[i] = Modulo(q->D[i]-2*sigma*eta[i]);
+                q->J[i][i] = Modulo(2*q->D[i], 8); //Is this line necessary? They don't mention it explicitly but it seems required to keep definition of J
+                for (int j = 0; j < q->k; j++){
+                    if (i==j){continue;}
+                    q->J[i][j] = Modulo(q->J[i][j] + 4*eta[i]*eta[j], 8);
+                }
             }
             return 1./sqrt(2);
         }
