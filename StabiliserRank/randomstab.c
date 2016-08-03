@@ -104,12 +104,20 @@ short * RandomD(int n)
 
 short ** RandomJ(int n, short* D)
 {
+    short val;
     short **J = (short **)malloc(n, sizeof(short *));
     for (int i =0; i<n; i++){
-        J[i] = (short *)calloc(n, sizeof(short));
-        J[i][i] = Modulo(2*D[i],8);
+        J[i] = (short *)malloc(n, sizeof(short));
+        for (int j  0; j<n; j++){
+            J[i][j] = -1;
+            J[i][i] = 1;
+            val = Random() < 0.5 ? 4 : 0;
+            if (J[i][j] < 0){
+                J[i][j] = val;
+                J[j][i] = val;
+            }
+        }
     }
-    //TODO off diagonals
     return J;
 }
 

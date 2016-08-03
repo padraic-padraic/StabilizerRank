@@ -34,15 +34,18 @@ long double MeasurePauli(stabiliser *phi, pauli *p)
         }
         w = Modulo(w, 2);
     }
-    if (EqualVectors(a->k, p->xi, xi_prime)){
+    if (!EqualVectors(a->k, p->xi, xi_prime)){
         extend(a, p->xi);
-        //Update D somehow what?
-        J = q->J;
-        short **J_prime = (short **)malloc(q->k+1 * sizeof(short*));
+        short *D = q->D, *D_prime = (short *)malloc(q->k+1*sizeof(short));
+        short *h[a->n];
+        for (int i = 0; i < a->n; i++){h[i] = a->h[i];}
+        AddVectors(a->n, h, p->xi);
+        short **J = q->J, **J_prime = (short **)malloc(q->k+1 * sizeof(short*));
         for (int i = 0; i < q->k+1; i++){
             J_prime[i] = (short)calloc(q->k+1, sizeof(short));
             if (i < q->k){
                 for (int j = 0; j < q->k; j++){
+                    D_prime[i] = D[i];
                     J_prime[i][j] = J[i][j];
                 }
             }
@@ -52,9 +55,14 @@ long double MeasurePauli(stabiliser *phi, pauli *p)
             J_prime[i][q->k+1] = Modulo(4*p->zeta[i], 8);
             free(J[i]);
         }
+        D_prime[q->k+1] = Modulo(2*m+4*InnerProduct(p->zeta, h), 8);
         J_prime[q->k+1][q->k+1] = Modulo(4*m, 8);
+        q->D = D_prime;
         q->J = J_prime;
         q->k++;
+        free(D);
+        free(J);
+        free(xi_prime);
         return 1./sqrt(2);
     } else {
         if (w==0 || w == 4){
@@ -67,6 +75,8 @@ long double MeasurePauli(stabiliser *phi, pauli *p)
                 }
             }
             shrink_result r = shrink(phi, gamma, Modulo(w+InnerProduct(eta, a->h), 2));
+            free(gamma);
+            free(xi_prime);
             if (result == EMPTY){
                 return 0;
             } else if (result == SAME){
@@ -85,6 +95,7 @@ long double MeasurePauli(stabiliser *phi, pauli *p)
                     q->J[i][j] = Modulo(q->J[i][j] + 4*eta[i]*eta[j], 8);
                 }
             }
+            free(xi_prime);
             return 1./sqrt(2);
         }
     }

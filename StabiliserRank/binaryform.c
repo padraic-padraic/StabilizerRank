@@ -65,7 +65,7 @@ short InnerProduct(int len, short *x, short *y)
 
 void LeftMultiply(int len, short **R, short *x, short *target, short base)
 {
-    short res[len]
+    short res[len];
     for (int i = 0; i < len; i++){
         res[i] = Modulo(InnerProduct(len, R[i], x), base);
     }
