@@ -51,9 +51,15 @@ void qfm_DeleteRow(quadratic_fm *q, int target);
 
 void AddVectors(unsigned short *v1, unsigned short *v2);
 
+void shrink_SwapVectors(affine_sp *a, int target);
+
+void extend_SwapVectors(affine_sp *a, int target);
+
 void shrink(stabiliser *phi, unsigned short *xi, unsigned short alpha);
 
 void lazy_shrink(stabiliser *phi, unsigned short *xi, unsigned short alpha);
+
+void extend(affine_sp *a, unsigned short *xi);
 
 #endif
 

@@ -162,7 +162,7 @@ void AddVectors(int len, unsigned short *v1, unsigned short *v2)
     }
 }
 
-void afp_SwapVectors(affine_sp *a, int target)
+void shrink_SwapVectors(affine_sp *a, int target)
 {
     unsigned short scratch_space;
     for (int i = 0; i < a->n; i++){
@@ -174,6 +174,20 @@ void afp_SwapVectors(affine_sp *a, int target)
         a->GBar[a->k][i] = scratch_space;
     }
 }
+
+void extend_SwapVectors(affine_sp *a, int target)
+{
+    unsigned short scratch_space;
+    for (int i = 0; i < a->n; i++){
+        scratch_space = a->G[target][i];
+        a->G[target][i] = a->G[a->k+1][i];
+        a->G[a->k+1][i] = scratch_space;
+        scratch_space = a->GBar[target][i];
+        a->GBar[target][i] = a->GBar[a->k +1][i]
+        a->GBar[a->k +1][i] = scratch_space;
+    }
+}
+
 
 int RandomIntInRange(unsigned short *len)
 {    
@@ -217,7 +231,7 @@ result shrink(stabiliser *phi, unsigned short *xi, unsigned short alpha)
         }
         qfm_BasisChange(q, R);
     }
-    afp_SwapVectors(a, target);
+    shrink_SwapVectors(a, target);
     //Reset the transformation matrix
         for (int i =0; i < q->k; i++){
             for (int j=0; j < q->k; j++){R[i][j] = 0;}
@@ -267,10 +281,49 @@ result lazy_shrink(stabiliser *phi, unsigned short *xi, unsigned short alpha)
             AddVectors(a->GBar[target], a->GBar[i]);
         }
     }
-    afp_SwapVectors(a, target);
+    shrink_SwapVectors(a, target);
     if (beta != 0){
         AddVectors(a->h, a->G[a->k]);
     }
     a->k-=1;
     return SUCCESS;
+}
+
+void extend(affine_sp *a, unsigned short *xi)
+{
+    short *S[a->n];
+    for (int i = 0; i<n; i++){S[i]=-1;}
+    int order_S = 0, order_T = 0;
+    for (int i = 0; i < a->n; i++){
+        if (InnerProduct(xi, a->GBar[i]) == 1){
+            S[order_S++] = i;//Increments order_S and passes the old value to index S
+        }
+    }
+    short *T[order_S];
+    for (int i = 0; i<n; i++){T[i]=-1;}
+    for (int i = a->k; i<n; i++){
+        for (int j = 0; j < order_S; j++){
+            if (S[j] == i){
+                T[order_T++] = i;
+                break;
+            }
+        }
+    }
+    if (T[0] == -1){
+        return; //Extend has failed
+    }
+    short i = T[RandInt(order_T)];
+    unsigned short **R = (unsigned short**)malloc(a->n, sizeof(unsigned short *));
+    for (int i = 0; i<a->n; i++){
+        R[i]=(unsigned short *)calloc(a->n, sizeof(unsigned short));
+        R[i][i] = 1;
+    }
+    for (int j = 0; j<order_S; j++){
+        if(S[j] == i){continue;}
+        AddVectors(a->GBar[j], a->GBar[i]);
+    }
+    a->G[i] = xi;
+    extend_SwapVectors(a, i);
+    a->k+=1;
+    return;
 }
