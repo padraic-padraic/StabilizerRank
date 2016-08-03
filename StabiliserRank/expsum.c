@@ -54,7 +54,7 @@ void NonNullS(quadratic_fm *q, short *set_S, short *order_S)
 {
     int target=-1;
     //Prepare the transformation matrix, initially as the Identity
-    short **R = (short **)calloc(q->k, sizeof(short*));
+    short **R = (short **)malloc(q->k * sizeof(short*));
     for (int i = 0; i <q->k;i++){
         R[i]=(short *)calloc(q->k, sizeof(short));
         R[i][i] = 1;
@@ -67,7 +67,7 @@ void NonNullS(quadratic_fm *q, short *set_S, short *order_S)
     }
     qfm_BasisChange(q, R);
     S[0] = S[target]
-    for (int i =1; i<order_S; i++){S[i]=-1;}
+    for (int i =1; i<*order_S; i++){S[i]=-1;}
     *order_S = 1;
 }
 
@@ -77,9 +77,9 @@ void PartitionBasis(quadratic_fm *q, short **dimers, short *monomers, short S)
     if (S >-1){order_E--;}
     short *E[order_E];
     short *K[order_E];
-    short **R = (short *)calloc(q->k*sizeof(short*));
+    short **R = (short *)malloc(q->k*sizeof(short*));
     for(int i =0; i <q->k; i++){
-        R[i]= (short)calloc(q->k*)*sizeof(short);
+        R[i]= (short)calloc(q->k*)*sizeof(short); //Initialize R to identity
         R[i][i]=1;
     }
     int count = 0, target, target_2, k_count=0, order_M=0, r=0;
@@ -93,7 +93,7 @@ void PartitionBasis(quadratic_fm *q, short **dimers, short *monomers, short S)
         target = (int)((double)rand() / ((double)RAND_MAX + 1) * order_E);
         for(int i = 0; i<order_E; i++){
             if(i==target){continue;}
-            if(q->J[target][E[i]] ==4){
+            if(q->J[E[target]][E[i]] ==4){
                 K[k_count]=E[i];
                 k_count++;
             }
@@ -108,6 +108,12 @@ void PartitionBasis(quadratic_fm *q, short **dimers, short *monomers, short S)
             for (int i=0; i<order_E; i++){
                 if (i==target || i == target_2){continue;}
                 //Fill R matrix - TODO
+                if (q->J[E[target]][i] == 4){
+                    R[i][E[target]] = 1;
+                }
+                if (q->J[E[target2]][i] == 4){
+                    R[i][E[target2]] = 1;
+                }
             }
             qfm_BasisChange(q, R);
             dimers[r][0] = E[target];
