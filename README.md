@@ -5,7 +5,9 @@ This is the main git repository for my MRes project on the Bravyi-Gosset Algroti
 The project is split into several chunks: 
 
 1) **iPython Notebooks**
-    These contain prototyping code for generating n-Qubit stabilizer groups, and a small test for bounding the size of approximate decompositions of n-fold magic states in the computational basis. 
+    These contain prototyping code for generating n-Qubit stabilizer groups, and a small test for bounding the size of approximate decompositions of n-fold magic states in the comp
+utational basis. 
+
 2) **'StabiliserRank'**
     This folder contains C-code to implement the pseudo-code descriped by Bravyi & Gosset in the appendices of their [paper](http://arxiv.org/abs/1601.07601). When extended with code to generate the correct sequence of Pauli measurements to implement a given circuit, this will implement the full StabiliserRank method
     
