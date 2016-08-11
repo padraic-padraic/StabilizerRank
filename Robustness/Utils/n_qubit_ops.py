@@ -6,6 +6,8 @@ from itertools import combinations
 from qutip import commutator, qeye, Qobj, sigmax, sigmay, sigmaz, tensor
 
 import numpy as np
+import os
+import pickle
 
 zer_obj = Qobj(np.zeros((4,4)), dims=[[2,2], [2,2]])
 I = qeye(2)
@@ -131,8 +133,9 @@ def gen_stabiliser_groups(n):
 def projector(generators, n_qubits):
     I = qeye(pow(2, n_qubits))
     res = qeye(pow(2, n_qubits))
-    I.dims = [[n_qubits, n_qubits], [n_qubits, n_qubits]]
-    res.dims = [[n_qubits, n_qubits], [n_qubits, n_qubits]]
+    dims = [[2]*n_qubits, [2]*n_qubits]
+    I.dims = dims
+    res.dims = dims
     for gen in generators:
         res *= (I+gen)/2
     return res
@@ -144,8 +147,15 @@ def get_proj_eigenstate(projector):
             return vecs[n]
 
 def stab_states(n):
+    path = os.path.join(os.path.dirname(__file__),
+                        str(n)+'_stabs.pkl')
+    if os.path.isfile(path):
+        print('Loaded')
+        return pickle.load(open(path, 'rb'))
     projectors = [projector(g, n) for g in gen_stabiliser_groups(n)]
     if len(projectors) != n_stab(n):
         raise ValueError('Your code is bad and you should feel bad')
-    return [get_proj_eigenstate(proj)
+    vals = [get_proj_eigenstate(proj)
             for proj in projectors]
+    pickle.dump(vals, open(path, 'wb'), -1)
+    return vals

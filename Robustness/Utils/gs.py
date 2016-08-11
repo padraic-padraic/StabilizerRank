@@ -22,6 +22,8 @@ def check_lin_independence(vectors):
     return True
 
 def gs_prj(base, target):
+    if np.allclose(np.sum((base.H*base)), 0):
+        return 0*target
     return np.sum((base.H*target)) / np.sum((base.H*base)) * base
 
 def GramSchmidt(vectors):
@@ -38,7 +40,10 @@ def GramSchmidt(vectors):
             U[:,i] -= gs_prj(U[:,j], V[:,i])
     for i in range(len(vectors)):
         norm = np.linalg.norm(np.matrix(U[:,i]), 2)
-        U[:,i] /= norm
+        if np.allclose(norm, 0):
+            U[:,i] *= 0
+        else:    
+            U[:,i] /= norm
     return [np.matrix(U[:,i]) for i in range(len(vectors))]
 
 def Projector(vectors):
