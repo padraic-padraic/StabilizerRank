@@ -12,7 +12,8 @@ X = sigmax()
 Y = sigmay()
 Z = sigmaz()
 
-__all__ = ['gen_stabiliser_groups', 'BinarySubspace', 'string_to_pauli']
+__all__ = ['gen_stabiliser_groups', 'BinarySubspace', 'string_to_pauli',
+           'stab_states', 'get_proj_eigenstate']
 
 def xor(a,b):
     return (a|b)&~(a&b)
@@ -84,7 +85,14 @@ def test_commutivity(n, bits1, bits2):
     ## Supposedly 'stabilised' by e.g IX, -IX....
         return False
     p1, p2 = string_to_pauli(n, bits1), string_to_pauli(n, bits2)
-    return commutator(p1,p2) == zer_obj
+    return np.sum(np.abs(commutator(p1,p2).full())) == 0.
+    # pbits1 = bits1[:n]|bits1[n:-1]
+    # pbits2 = bits2[:n]|bits2[n:-1]
+    # p_count = 0
+    # for b1, b2 in zip(pbits1, pbits2):
+    #     if b1 and b2:
+    #         p_count += 1
+    # return p_count%2 == 0
 
 def find_generators(n, bitstrings):
     subspaces = []
@@ -118,3 +126,25 @@ def gen_stabiliser_groups(n):
     for group in generators:
         pauli_generators.append([string_to_pauli(n, p) for p in group])
     return pauli_generators
+
+def projector(generators, n_qubits):
+    I = qt.qeye(pow(2, n_qubits))
+    res = qt.qeye(pow(2, n_qubits))
+    I.dims = [[n_qubits, n_qubits], [n_qubits, n_qubits]]
+    res.dims = [[n_qubits, n_qubits], [n_qubits, n_qubits]]
+    for gen in generators:
+        res *= (I+gen)/2
+    return res
+
+def get_proj_eigenstate(projector):
+    eigs, vecs = projector.eigenstates(sort='high')
+    for n, eig in enumerate(eigs):
+        if np.allclose(eig, complex(1)):
+            return vecs[n]
+
+def stab_states(n):
+    projectors = [projector(g, n) for g in gen_stabiliser_groups(n)]
+    if len(projectors) != n_stab(n):
+        raise ValueError('Your code is bad and you should feel bad')
+    return [get_proj_eigenstate(proj)
+            for proj in projectors]
