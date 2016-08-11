@@ -1,6 +1,7 @@
 """Function to generate the full set of n-qubit stabiliser groups
 using the set of n-qubit paulis with real-valued phase.
 Note this set excludes the n-fold identity, and -1*n-fold identity."""
+from .n_stab import n_stab
 from itertools import combinations
 from qutip import commutator, qeye, Qobj, sigmax, sigmay, sigmaz, tensor
 
@@ -128,8 +129,8 @@ def gen_stabiliser_groups(n):
     return pauli_generators
 
 def projector(generators, n_qubits):
-    I = qt.qeye(pow(2, n_qubits))
-    res = qt.qeye(pow(2, n_qubits))
+    I = qeye(pow(2, n_qubits))
+    res = qeye(pow(2, n_qubits))
     I.dims = [[n_qubits, n_qubits], [n_qubits, n_qubits]]
     res.dims = [[n_qubits, n_qubits], [n_qubits, n_qubits]]
     for gen in generators:

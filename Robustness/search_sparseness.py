@@ -1,4 +1,4 @@
-from Utils import n_stab, stab_states, OrthoProjector, SL0
+from Utils import n_stab, Projector, OrthoProjector, SL0, stab_states
 
 import numpy as np
 import qutip as qt
@@ -15,11 +15,10 @@ F = (cos(BETA)*qt.basis(2,0) + cexp(1j*PI/4)*sin(BETA)*qt.basis(2,1)).unit()
 def brute_force_sparseness(target, stabs):
     for i in range(len(stabs)):
         for basis in combinations(stabs, i+1): #Try all combinations of i stabiliser states
-            print(i+1)
             proj = OrthoProjector([b.full() for b in basis])
-            projection = np.trace(proj*np.matrix(target.full()))
-            print(projection)
+            projection = np.linalg.norm(proj*target.full(), 2)
             if np.allclose(projection, 1.):
+                print(basis)
                 return i+1
     return 'This probably shouldn\'t have happened you dolt.'
 
@@ -34,16 +33,19 @@ def SL0_estimate(target, stabs, n_qubits):
     for i in range(h_dim): #Build the state vector as a numpy matrix
         b[i] = basis[i].overlap(target)
     x = SL0(A, b, 1e-15) #Run the SL0 routine defined in Utils.SL0
+    for i in range(x.size):
+        x[i] = np.abs(x[i])
+    # print(x)
     return np.count_nonzero(x)
 
 if __name__ == '__main__':
     out_str = """For the {0} state, the SL0 algorithm gives a sparseness of {1},
                  and the brute force search gives {2} for {3} qubits"""
     stabs = stab_states(2)
-    target = qt.tensor(H,H)
+    target = qt.tensor(H,H).unit()
     print(out_str.format('H', SL0_estimate(target, stabs, 2), 
                          brute_force_sparseness(target, stabs), 2))
-    target = qt.tensor(F,F)
+    target = qt.tensor(F,F).unit()
     print(out_str.format('F', SL0_estimate(target, stabs, 2), 
                          brute_force_sparseness(target, stabs), 2))
     target = qt.rand_ket(4)

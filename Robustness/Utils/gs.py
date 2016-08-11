@@ -5,7 +5,7 @@ import numpy as np
 
 from scipy.linalg import lu
 
-__all__ = ['OrthoProjector','GramSchmidt']
+__all__ = ['Projector', 'OrthoProjector','GramSchmidt']
 
 def check_lin_independence(vectors):
     """Gram-Schmidt only applies if vectors are linearly independent.
@@ -37,8 +37,16 @@ def GramSchmidt(vectors):
         for j in range(i):
             U[:,i] -= gs_prj(U[:,j], V[:,i])
     for i in range(len(vectors)):
-        U[:,i] /= np.sqrt(np.sum(np.matrix(U[:,i]).H * np.matrix(U[:,i])))
+        norm = np.linalg.norm(np.matrix(U[:,i]), 2)
+        U[:,i] /= norm
     return [np.matrix(U[:,i]) for i in range(len(vectors))]
+
+def Projector(vectors):
+    dim = len(vectors[0])
+    A = np.matrix(np.zeros([dim, len(vectors)], dtype=np.complex_))
+    for i in range(len(vectors)):
+        A[:,i] = vectors[i]
+    return A*(A.H*A).I*A.H
 
 def OrthoProjector(vectors):
     dim  = len(vectors[0])
