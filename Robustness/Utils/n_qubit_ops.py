@@ -3,10 +3,13 @@ using the set of n-qubit paulis with real-valued phase.
 Note this set excludes the n-fold identity, and -1*n-fold identity."""
 from .n_stab import n_stab
 from bitarray import bitarray
+from functools import reduce
 from itertools import combinations
 from qutip import commutator, qeye, Qobj, sigmax, sigmay, sigmaz, tensor
+from random import sample, shuffle
 
 import numpy as np
+import operator as op
 import os
 import pickle
 
@@ -17,6 +20,23 @@ Z = sigmaz()
 
 __all__ = ['gen_stabiliser_groups', 'BinarySubspace', 'string_to_pauli',
            'stab_states', 'get_proj_eigenstate']
+
+def ncr(n, r):
+    """Efficient evaluation of ncr, taken from StackOverflow
+    http://stackoverflow.com/questions/4941753/is-there-a-math-ncr-function-in-python"""
+    r = min(r, n-r)
+    if r == 0: return 1
+    numer = reduce(op.mul, range(n, n-r, -1))
+    denom = reduce(op.mul, range(1, r+1))
+    return numer//denom
+
+def random_combination(iterable, r):
+    """Random selection from itertools.combinations(iterable, r)
+    Taken from itertools.recipes on pydoc"""
+    pool = tuple(iterable)
+    n = len(pool)
+    indices = sorted(sample(range(n), r))
+    return tuple(pool[i] for i in indices)
 
 def xor(a,b):
     return (a|b)&~(a&b)
@@ -90,7 +110,7 @@ def string_to_pauli(n, bits):
     return tensor(pauli_chain)
 
 def test_commutivity(n, bits1, bits2):
-    if np.array_equal(bits1[:-1], bits2[:-1]): ##Additional check, removes groups
+    if all(xnor(bits1[:-1], bits2[:-1])): ##Additional check, removes groups
     ## Supposedly 'stabilised' by e.g IX, -IX....
         return False
     p1, p2 = string_to_pauli(n, bits1), string_to_pauli(n, bits2)
@@ -106,7 +126,8 @@ def test_commutivity(n, bits1, bits2):
 def find_generators(n, bitstrings):
     subspaces = []
     target = n_stab(n)
-    for group in combinations(bitstrings, n):
+    for group in random_combination(combinations(bitstrings, n),
+                                    ncr(len(bitstrings), n)):
         if len(group) == 2:
             if not test_commutivity(n, group[0], group[1]):
                 continue
@@ -118,6 +139,7 @@ def find_generators(n, bitstrings):
         if any([candidate == space for space in subspaces]):
             continue
         subspaces.append(candidate)
+        # print(len(subspaces))
         if len(subspaces) == target:
             break
     return [tuple(subspace.generators) for subspace in subspaces]
@@ -132,6 +154,7 @@ def gen_stabiliser_groups(n):
         # a = np.array([b == '1' for b in bin_string])
         bitstrings.append(a)
     print('Found {} binary strings'.format(len(bitstrings)))
+    # shuffle(bitstrings)
     generators = find_generators(n, bitstrings)
     # print(generators)
     print('Found {} unique generators'.format(len(generators)))
