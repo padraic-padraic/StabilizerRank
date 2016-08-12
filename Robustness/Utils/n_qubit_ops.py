@@ -105,6 +105,7 @@ def test_commutivity(n, bits1, bits2):
 
 def find_generators(n, bitstrings):
     subspaces = []
+    target = n_stab(n)
     for group in combinations(bitstrings, n):
         if len(group) == 2:
             if not test_commutivity(n, group[0], group[1]):
@@ -117,7 +118,8 @@ def find_generators(n, bitstrings):
         if any([candidate == space for space in subspaces]):
             continue
         subspaces.append(candidate)
-
+        if len(subspaces) == target:
+            break
     return [tuple(subspace.generators) for subspace in subspaces]
 
 def gen_stabiliser_groups(n):

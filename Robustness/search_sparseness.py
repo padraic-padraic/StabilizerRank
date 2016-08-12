@@ -29,7 +29,12 @@ def SL0_estimate(target, stabs, n_qubits):
     A = np.matrix(np.zeros([h_dim, len(stabs)], dtype=np.complex_))
     for i in range(h_dim): ##Build the h_dim x n_stab dimensional A matric
         for j in range(len(stabs)):
-            A[i,j] = basis[i].overlap(stabs[j])
+            try:
+                A[i,j] = basis[i].overlap(stabs[j])
+            except TypeError:
+                print(basis[i])
+                print(stabs[j])
+                raise TypeError('Quitting for real now')
     b = np.matrix(np.zeros(h_dim, dtype=np.complex_)).T
     for i in range(h_dim): #Build the state vector as a numpy matrix
         b[i] = basis[i].overlap(target)
@@ -63,13 +68,13 @@ def do_for_n_qubits(n, **kwargs):
     return res
 
 if __name__ == '__main__':
-    # ns = [[1],[2]]#, [3], [4],# 5, 6, 7]
+    # ns = [[1], [2], [3], [4], [5], [6], [7]]
     # kwargs_list = [{}]*len(ns)
     # outputs = star_execution(do_for_n_qubits, ns, kwargs_list)
-    outputs = [do_for_n_qubits(i) for i in range(1,8)]
     ostring = datetime.datetime.now().strftime('%d%m%Y_%H%M%S')+".txt"
-    with open(ostring, 'w') as f:
-        for out in outputs:
+    for i in range(1,4):
+        with open(ostring, 'w') as f:
+            out = do_for_n_qubits(i)
             for res in out:
                 f.write(res)
                 f.write("\n")
