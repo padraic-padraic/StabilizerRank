@@ -124,7 +124,12 @@ def test_commutivity(n, bits1, bits2):
     # return p_count%2 == 0
 
 def find_generators(n, bitstrings):
-    subspaces = []
+    path = os.path.join(os.path.dirname(__file__),
+                        str(n)+'_generators.pkl')    
+    if os.path.isfile(path):
+        return pickle.load(open(path, 'rb'))
+    subspaces = set()
+    generators = []
     target = n_stab(n)
     for group in random_combination(combinations(bitstrings, n),
                                     ncr(len(bitstrings), n)):
@@ -136,13 +141,16 @@ def find_generators(n, bitstrings):
                         for pair in combinations(group, 2)]): 
                 continue
         candidate = BinarySubspace(*group)
-        if any([candidate == space for space in subspaces]):
-            continue
-        subspaces.append(candidate)
+        found = len(subspaces)
+        subspaces.add(tuple([i.to01() for i in sorted(candidate._items)]))
+        if len(subspaces) == found+1:
+            generators.append(candidate.generators)
         # print(len(subspaces))
         if len(subspaces) == target:
             break
-    return [tuple(subspace.generators) for subspace in subspaces]
+    res =  [tuple(gen_set) for gen_set in generators]
+    pickle.dump(res, open(path, 'wb'))
+    return res
 
 def gen_stabiliser_groups(n):
     bitstrings = []
@@ -190,5 +198,7 @@ def stab_states(n):
         raise ValueError('Your code is bad and you should feel bad')
     vals = [get_proj_eigenstate(proj)
             for proj in projectors]
+    if any([v is None for v in vals]):
+        print('Eep')
     pickle.dump(vals, open(path, 'wb'), -1)
     return vals

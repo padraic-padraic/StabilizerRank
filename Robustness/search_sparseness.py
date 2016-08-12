@@ -1,4 +1,4 @@
-from Utils import n_stab, Projector, OrthoProjector, SL0, stab_states
+from Utils import gen_stabiliser_groups, n_stab, Projector, OrthoProjector, SL0, stab_states
 from Utils.dispatcher import star_execution
 
 import datetime
@@ -68,14 +68,22 @@ def do_for_n_qubits(n, **kwargs):
     return res
 
 if __name__ == '__main__':
-    # ns = [[1], [2], [3], [4], [5], [6], [7]]
-    # kwargs_list = [{}]*len(ns)
-    # outputs = star_execution(do_for_n_qubits, ns, kwargs_list)
     ostring = datetime.datetime.now().strftime('%d%m%Y_%H%M%S')+".txt"
-    for i in range(1,4):
-        with open(ostring, 'w') as f:
-            out = do_for_n_qubits(i)
-            for res in out:
-                f.write(res)
-                f.write("\n")
+    ns = [[1], [2], [3]]#, [4], [5], [6], [7]]
+    kwargs_list = [{}]*len(ns)
+    pool, results = star_execution(gen_stabiliser_groups, ns, kwargs_list)
+    while results:
+        if results[0].ready():
+            out = results.pop(0).get()
+            # with open(ostring, 'w') as f:
+            #     for res in out:
+            #         f.write(res)
+            #         f.write("\n")
+    pool.close()
+    # for i in range(1,3):
+    #     with open(ostring, 'w') as f:
+    #         out = do_for_n_qubits(i)
+    #         for res in out:
+    #             f.write(res)
+    #             f.write("\n")
     

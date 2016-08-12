@@ -34,6 +34,4 @@ def star_execution(f, arg_list, kwarg_list):
     for args,kwargs in call_with:
         print(args,kwargs)
         results.append(pool.apply_async(f, args, kwargs))
-    pool.close()
-    pool.join()
-    return [res.get() for res in results]
+    return pool, results
