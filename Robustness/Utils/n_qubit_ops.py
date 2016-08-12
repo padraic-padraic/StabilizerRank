@@ -2,6 +2,7 @@
 using the set of n-qubit paulis with real-valued phase.
 Note this set excludes the n-fold identity, and -1*n-fold identity."""
 from .n_stab import n_stab
+from bitarray import bitarray
 from itertools import combinations
 from qutip import commutator, qeye, Qobj, sigmax, sigmay, sigmaz, tensor
 
@@ -9,7 +10,6 @@ import numpy as np
 import os
 import pickle
 
-zer_obj = Qobj(np.zeros((4,4)), dims=[[2,2], [2,2]])
 I = qeye(2)
 X = sigmax()
 Y = sigmay()
@@ -21,6 +21,9 @@ __all__ = ['gen_stabiliser_groups', 'BinarySubspace', 'string_to_pauli',
 def xor(a,b):
     return (a|b)&~(a&b)
 
+def xnor(a,b):
+    return (a&b)^(~a&~b)
+
 class BinarySubspace(object):
     """Set-like class for bitarray objects to generate a closed subspace."""
     def __init__(self, *data):
@@ -28,13 +31,14 @@ class BinarySubspace(object):
         self._items = []
         self.generators = []
         for val in data:
-            if not isinstance(val, np.ndarray):
-                raise ValueError('This class works for numpy arrays only!')
+            # if not isinstance(val, np.ndarray):
+            #     raise ValueError('This class works for numpy arrays only!')
             self.add(val)
     
     def __contains__(self, it):
         for _el in self._items:
-            if np.array_equal(_el, it):
+            # if np.array_equal(_el, it):
+            if all(xnor(_el, it)):
                 return True
         return False
 
@@ -44,7 +48,8 @@ class BinarySubspace(object):
 
     def _generate(self, obj):
         for item in self._items:
-            new = xor(item, obj)
+            new = item^obj
+            # new = xor(item, obj)
             if new in self:
                 continue
             else:
@@ -58,7 +63,8 @@ class BinarySubspace(object):
 
     def add(self, obj):
         for _el in self._items:
-            if np.array_equal(obj, _el):
+            # if np.array_equal(obj, _el):
+            if all(xnor(obj, _el)):
                 return self
         self.order +=1
         self.generators.append(obj)
@@ -71,11 +77,11 @@ def string_to_pauli(n, bits):
     bits = np.delete(bits, -1)
     pauli_chain = []
     for x, z in zip(bits[:n], bits[n:]):
-        if not x and not z:
+        if ~x and ~z:
             pauli_chain.append(I)
         elif x and z:
             pauli_chain.append(Y)
-        elif x and not z:
+        elif x and ~z:
             pauli_chain.append(X)
         else:
             pauli_chain.append(Z) 
@@ -118,8 +124,10 @@ def gen_stabiliser_groups(n):
     bitstrings = []
     for i in range(2, pow(2, 2*n+1)): #We ignore the strings for 0 and 1 as these correspond to I^{n} and -I^{n}.
         bin_string = bin(i)[2:] #strip the 0b from the string
-        bin_string = '0'*(2*n+1 - len(bin_string)) + bin_string
-        a = np.array([b == '1' for b in bin_string])
+        a = bitarray(2*n+1 - len(bin_string))
+        a.extend(bin_string)
+        # bin_string = '0'*(2*n+1 - len(bin_string)) + bin_string
+        # a = np.array([b == '1' for b in bin_string])
         bitstrings.append(a)
     print('Found {} binary strings'.format(len(bitstrings)))
     generators = find_generators(n, bitstrings)
