@@ -38,7 +38,7 @@ def SL0_estimate(target, stabs, n_qubits):
     b = np.matrix(np.zeros(h_dim, dtype=np.complex_)).T
     for i in range(h_dim): #Build the state vector as a numpy matrix
         b[i] = basis[i].overlap(target)
-    x = SL0(A, b, 1e-15) #Run the SL0 routine defined in Utils.SL0
+    x = SL0(A, b, 1e-12) #Run the SL0 routine defined in Utils.SL0
     for i in range(x.size):
         x[i] = np.abs(x[i])
     # print(x)
@@ -46,44 +46,52 @@ def SL0_estimate(target, stabs, n_qubits):
 
 def do_for_n_qubits(n, **kwargs):
     print('Doing for ' + str(n) + ' qubits')
-    out_str = """For the {0} state, the SL0 algorithm gives a sparseness of {1},
-                 and the brute force search gives {2} for {3} qubits"""
-    out_str2 = """Minimal stabiliser decomposition found was:\n"""
+    out_str = """For the {0} state, the SL0 algorithm gives a sparseness of {1}"""
+            # and the brute force search gives {2} for {3} qubits"""
+    # out_str2 = """Minimal stabiliser decomposition found was:\n"""
     stabs = stab_states(n)
+    print('Doing H States')
     target = qt.tensor([H]*n).unit()
     l_norm = SL0_estimate(target, stabs, n)
-    basis, sparsity = brute_force_sparseness(target, stabs)
-    res = [out_str.format('H', l_norm, sparsity, n), 
-           out_str2 + "\n".join([str(b) for b in basis])]
+    print('Done SL0')
+    # basis, sparsity = brute_force_sparseness(target, stabs)
+    print('Done')
+    res = ['Doing for '+str(n) + ' qubits\n']
+    res.append(out_str.format('H', l_norm))#, sparsity, n), 
+    # res.append(out_str2 + "\n".join([str(b) for b in basis]))
+    print('Doing F states')
     target = qt.tensor([F]*n).unit()
     l_norm = SL0_estimate(target, stabs, n)
+    print('Done SL0')
     basis, sparsity = brute_force_sparseness(target, stabs)
-    res.append(out_str.format('F', l_norm, sparsity, n)) 
-    res.append(out_str2 + "\n".join([str(b) for b in basis]))
+    print('Done')
+    res.append(out_str.format('F', l_norm))#, sparsity, n)) 
+    # res.append(out_str2 + "\n".join([str(b) for b in basis]))
     target = qt.rand_ket(pow(2,n))
-    basis, sparsity = brute_force_sparseness(target, stabs)
-    res.append(out_str.format('random', l_norm, sparsity, n)) 
-    res.append(out_str2 + "\n".join([str(b) for b in basis]))
+    l_norm = SL0_estimate(target, stabs, n)
+    # basis, sparsity = brute_force_sparseness(target, stabs)
+    res.append(out_str.format('random', l_norm))#, sparsity, n)) 
+    # res.append(out_str2 + "\n".join([str(b) for b in basis]))
     print('Done for ' + str(n) + ' qubits')
     return res
 
 if __name__ == '__main__':
     ostring = datetime.datetime.now().strftime('%d%m%Y_%H%M%S')+".txt"
-    ns = [[1], [2], [3]]#, [4], [5], [6], [7]]
-    kwargs_list = [{}]*len(ns)
-    pool, results = star_execution(gen_stabiliser_groups, ns, kwargs_list)
-    while results:
-        if results[0].ready():
-            out = results.pop(0).get()
-            # with open(ostring, 'w') as f:
-            #     for res in out:
-            #         f.write(res)
-            #         f.write("\n")
-    pool.close()
-    # for i in range(1,3):
-    #     with open(ostring, 'w') as f:
-    #         out = do_for_n_qubits(i)
-    #         for res in out:
-    #             f.write(res)
-    #             f.write("\n")
+    ns = [[1], [2], [3], [4], [5], [6], [7]]
+    # kwargs_list = [{}]*len(ns)
+    # pool, results = star_execution(do_for_n_qubits, ns, kwargs_list)
+    # while results:
+    #     if results[0].ready():
+    #         out = results.pop(0).get()
+    #         with open(ostring, 'a') as f :
+    #             for res in out:
+    #                 f.write(res)
+    #                 f.write("\n")
+    # pool.close()
+    for n in ns:
+        out = do_for_n_qubits(*n)
+        with open(ostring, 'a') as f:
+            for res in out:
+                f.write(res +"\n")
+
     
