@@ -111,7 +111,7 @@ def test_commutivity(n, bits1, bits2):
 
 def find_generators(bitstrings):
     n = len(bitstrings[0])//2
-    subspaces = set()
+    subspaces = []
     generators = []
     target = n_stab(n) // pow(2,n) #We add in the phase later
     for group in random_combination(combinations(bitstrings, n),
@@ -128,14 +128,13 @@ def find_generators(bitstrings):
             continue
         if len(candidate._items) < pow(2,n):
             continue
-        found = len(subspaces)
-        subspaces.add(tuple([i.to01() for i in sorted(candidate._items)]))
-        if len(subspaces) == found+1:
-            generators.append(candidate.generators)
-        if len(subspaces) == target:
+        res = tuple(i for i in sorted(candidate._items))
+        if not res in subspaces:
+            subspaces.append(res)
+            generators.append(tuple(candidate.generators))
+        if len(generators) == target:
             break
-    res =  [tuple(gen_set) for gen_set in generators]
-    return res
+    return generators
 
 def gen_stabiliser_groups(n):
     path = os.path.join(os.path.dirname(__file__),

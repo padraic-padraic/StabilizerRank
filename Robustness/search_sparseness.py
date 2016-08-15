@@ -63,7 +63,7 @@ def do_for_n_qubits(n, **kwargs):
     target = qt.tensor([F]*n).unit()
     l_norm = SL0_estimate(target, stabs, n)
     print('Done SL0')
-    basis, sparsity = brute_force_sparseness(target, stabs)
+    # basis, sparsity = brute_force_sparseness(target, stabs)
     print('Done')
     res.append(out_str.format('F', l_norm))#, sparsity, n)) 
     # res.append(out_str2 + "\n".join([str(b) for b in basis]))
@@ -77,7 +77,7 @@ def do_for_n_qubits(n, **kwargs):
 
 if __name__ == '__main__':
     ostring = datetime.datetime.now().strftime('%d%m%Y_%H%M%S')+".txt"
-    ns = [[1], [2], [3], [4], [5], [6], [7]]
+    ns = [[1], [2], [3]]#, [4]] #[5], [6], [7]]
     # kwargs_list = [{}]*len(ns)
     # pool, results = star_execution(do_for_n_qubits, ns, kwargs_list)
     # while results:
@@ -89,9 +89,12 @@ if __name__ == '__main__':
     #                 f.write("\n")
     # pool.close()
     for n in ns:
-        out = do_for_n_qubits(*n)
-        with open(ostring, 'a') as f:
-            for res in out:
-                f.write(res +"\n")
+        gen_stabiliser_groups(*n)
+        stab_states(*n)
+    #     stab_states(*n)
+        # out = do_for_n_qubits(*n)
+        # with open(ostring, 'a') as f:
+        #     for res in out:
+        #         f.write(res +"\n")
 
     
