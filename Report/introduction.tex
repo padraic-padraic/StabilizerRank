@@ -4,58 +4,14 @@ The pursuit of quantum computing is motivated by the promised `quantum speedup':
 \par
 Developing techniques for classical simulation of quantum computation has emerged as an interesting method to try and constrain and study this speedup~\cite{Jozsa2003}. Any system that is clasically simulable cannot, by definition, exhibit quantum speedup, as we can simply classically simulate the quantum computation to obtain the result without developing a quantum device. The converse conjecture, however, is not necessarily true, as it depends on the framework used to study the quantum circuits.  
 \par
+Most modern proposals for a Quantum Processor are based on a quantum error correcting code, such as the Surface Code, using Clifford gates and additional `magic' ancillae to implement a universal gate set. Previous classical simulations of these `Clifford+T' circuits had a comptuational compelxity that scaled exponentially in the T-count~\cite{Aaronson2004a}, and this has been considered a strong signifier of available quantum speedup~[Cite Someone].
+\par
+However, recent developments have called into question the value of these magic states as a resource. A new algorithm by Bravyi and Gosset~\cite{Bravyi2016b}, based on earlier work by Bravyi, Smolin \& Smith~\cite{Bravyi2015}, leads to a significant reduction in the exponential scaling as a function of the T-count. In particular, this amounts to an 8-fold quadratic reduction in computational complexity. 
+\par 
+What makes this result especially interesting is that the authors postulate that this enormous reduction in computational complexity is only achievable for magic states.  This would suggest that they are in some sense the weakest potential resource for quantum computation over arbitrary states.
 
+In this report, we explore the role of classical simulation in understanding and constraining quantum speedup. We present a review of the theory of quantum speedup, including a discussion of classical simulation techniques, before introducing the techniques of Bravyi, Gosset, Smolin \& Smith. We attempt to address their conjecture on the value of magic states as a resource, and use their techniques to examine different potential resources for qubit quantum computing. 
 \ifstandalone
-\bibliography{../MresProject.bib}
+\bibliography{../MResProject.bib,../ManualEntries.bib}
 \fi
 \end{document}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

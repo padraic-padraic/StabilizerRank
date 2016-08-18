@@ -1,4 +1,4 @@
-\documentclass[notitlepage,twocolumn,prx,amsmath,amssymb,aps,a4paper,nofootinbib,hyphens]{revtex4-1}
+\documentclass[notitlepage,onecolumn,prx,amsmath,amssymb,aps,a4paper,nofootinbib,hyphens]{revtex4-1}
 %-----------------------------------
 %% Sync Bibliography from Mendeley Generated
 \immediate\write18{../sync_bibliography.sh}
@@ -48,7 +48,7 @@
 %------------------------------------
 \usepackage{tensor}
 \usepackage{physics}
-\usepackage{complexity}
+\usepackage[bold]{complexity}
 \renewcommand{\poly}{\ensuremath\text{poly}}
 \usepackage[separate-uncertainty=true]{siunitx}
 \usepackage{dsfont}
@@ -58,44 +58,37 @@
 \usepackage[margin=2cm,includefoot]{geometry}
 \usepackage{enumerate}
 \usepackage{enumitem}
+\newcolumntype{P}[1]{>{\centering\arraybackslash}p{#1}}
+\usepackage{array}
+%-------------
+%My extensions to Dan's template
 \newenvironment{benumerate}{\begin{enumerate}[label=\textbf{\arabic*})]}{\end{enumerate}}
 \newenvironment{anumerate}{\begin{enumerate}[label=\textbf{\alph*}.]}{\end{enumerate}}
-\usepackage{array}
-\newcolumntype{P}[1]{>{\centering\arraybackslash}p{#1}}
+\usepackage{csquotes}
 \usepackage{standalone}
+%------
 \begin{document}
 \title{\textbf{MRes Report:} Studying Quantum Computing with the Stabilizer Rank Method }
 \author{\textsc{Padraic Calpin}}
 \email{padraic.calpin.15@ucl.ac.uk}
 \affiliation{EPSRC Centre for Doctoral Training in Delivering Quantum Technologies\\ Department of Physics and Astronomy, University College London, Gower Street, London WC1E 6BT}
 \author{\textbf{Supervisor:} \textsc{Dr. Dan Browne}}
-% \email{d.browne@ucl.ac.uk}
+\email{d.browne@ucl.ac.uk}
 \affiliation{EPSRC Centre for Doctoral Training in Delivering Quantum Technologies\\ Department of Physics and Astronomy, University College London, Gower Street, London WC1E 6BT}
 \date{\today}
 \begin{abstract}
    \input{abstract.tex}
 \end{abstract}
 \maketitle
-% \tableofcontents
+\tableofcontents
+\pagebreak
 \section{Introduction}
 \input{introduction.tex}
 \section{Literature Review}
 \input{litreview.tex}
 \section{The Bravyi, Gosset, Smolin, Smith Technique}
 \input{BSSG.tex}
-\section{Implementing the Algorithm}
 \section{Other Magic States}
 \bibliographystyle{nicebib}
-\bibliography{../MResProject.bib}
+\bibliography{../MResProject.bib,../ManualEntries.bib}
 \end{document}
-
-
-
-
-
-
-
-
-
-
-

@@ -1,57 +1,95 @@
 \documentclass{standalone}
 \begin{document}
-\subsection{Universal Quantum Compting}
-\subsection{Fault Tolerant Computing}
-\subsection{Constraing Quantum Speedup}
+%Structure for the Lit Review
+%Discuss origins of quantum computing, Quantum Turing Mahcine, Quantum Speedup
+%Discuss constraints e.g. Bennet & Brassard on no NP speedup
+%Discuss belief of the origins of this speedup e.g Entanglement (Jozsa, Vidal, Van Den Nest), Contextuality
+% New Section: Fault Tolerant Quantum Devices
+% GK: Stab circuits are efficiently simulable & stricly weaker than classical comp
+% Need a Cn>3 gate => State injeciton
+% Discuss magic states, costly to implement
+% Magic states coincide with the contextuality definition!
+% Discuss simulation of CLifford +T, and seeming exponential value of the T under CHP
+The origin of quantum computation is typically attributed to Professor Feynman, in a keynote address at the 1981 `First Conference on the Physics of Computation' at MIT~\cite{Feynman1982}. Feynman's speech discussed the problems of simulating physical systems computationally. As one candidate solution, he proposed the technique of quantum simulation: using the controlled dynamics of one quantum system to probe the dynamics of another. 
+\par
+At the same conference, Peter Benioff presented a paper on using Hamiltonian evolution of a spin-lattice system to realise a Turing Machine~\cite{Benioff1986}, an abstract model used to study universal classical computation. The state of the system is represented by an `tape', broken into cells which store binary values. The computation is carried out by a `head', which can read and write bits and move along the tape accoding to a programme. This simplified model is often employed in complexity theory, where the number of `steps' taken by the head and number of cells used give the temporal and spatial resources consumed in the computation.  In essence, Benioff proposed a quantum implementation of classical computation, encoding the binary state in the spin of the lattice, where the reading and writing would be controlled by spin-spin interactions. 
+\par
+Feynman's proposed quantum simulator followed a similar scheme, premised on applying annihilation, creation and `number' operators to different components of the system. This is analagous to subtracting, adding or reading a value on a Turing machine tape. Feynman similarly noted that a two-level spin system would serve as the smallest implementation of such a device. 
+\par
+Both schemes are early proposal of the `qubit', a two-level quantum system used as a building block in computation and communication protocols. The earliest example is attributed to Stephen Wiesner, who discussed using polarisation states of photons to implement a secure serial number in a `Quantum Money' scheme~\cite{Wiesner1983}. Wiesner developed this scheme in the 70s, but was unable to publish the work until after Feynman and Benioff's talks~\cite{Brassard2006}. The term qubit was later coined by Schumacher, in his paper on a quantum analogue of Shannon's noiseless coding theorem~\cite{Schumacher1995a}.
+\par
+The `quantum advantage' in these early proposals is presrnted somewhat abstractly. In Benioff's paper, he argues that implementing computation directly on a physical system should offer speed, size and energy advantages over existing classical implementations, but doesn't discuss these effects as originating from the quantum mechanical nature of the system. In Feynman's talk, however, the advtanges of using a quantum simulator are summarised succinctly in the popular quote:
+\textquote{Nature isn't classical, dammit, and if you want to make a simulation of nature you better make it quantum mechanical!}
+\par
 
-The potential for exponential speedups from quantum computing has been known since the earliest days of quantum computing~\cite{Jozsa2003}. In particular, in his 1985 paper David Deutsch....
+\subsection{Quantum Turing Machines}\label{sec:QTM}
+This question of what computational resources we need to simulate arbitrary physical systems was formalised by Deutsch in his 1985 paper `Quantum theory, the Church-Turing principle, and the universal quantum computer'. This paper is widely considered as establishing the theory of quantum computation, as it formally defines the principle of `Universal Quantum Computing.' 
+\par
+In this paper, Deutsch relates the Church-Turing thesis, a statement about the nature of computationally solveable problems, to the problem of simulating physical systems Feynman highlighted, to give a novel definiton of a universal computing machine: any device capable of perfectly simulating a finitely realisable physical system with finite resources. The classical Turing Machine fails this definition as binary numeral systems cannot be used to represent continuous real numbers require to simulate classical physical systems. Jozsa describes this strengthened Church-Turing-Deutsch thesis as requiring that questions of `What is computable?'\ be grounded in the laws of physics and not characterised by mathematics alone~\cite{Jozsa1997}.
+\par
+Instead, Deutsch introduces a model of a Quantum Turing Machine, which passes this Church-Turing-Deutsch criterion for simulating finite quantum mechanical systems. This is an extension of Feynman's ideas, and the quantum measurement automaton proposed by Albert~\cite{Albert1983}. Unlike Benioff's proposal, which restricted the system to classical computational states, the state of this device is explicity quantum mechanical, allowing any state in the $\mathbb{C}^{2^{n}} \otimes \mathbb{C}^{2^{m}}$ Hilbert space defined by the $n$ qubits in the processor $m$ qubits in the `tape'. The evolution of the combined processor-tape system is the described with unitary dynamics. 
+\par
+Interestingly, Deutsch proves that a Quantum Turing Machine would still be restriced to solving the class of `General Recursive' functions defined as computable under the Church-Turing thesis~\cite{Deutsch1985}. However, he goes on to demonstrate that a Quantum Turing Machine is capable of simulating a classical computation, and of simulating a much broader class of physical systems than a classical device~\cite{Deutsch1985}.
+\par
+In this paper, Deutsch also set out an algorithm which demonstrates the ability of a quantum computer to perform tasks faster than any classical device. In particular, he constructs a toy problem where we are given access to an `orcale', which evaluates a function $f:\mathbb{Z}_{2}^{2}\rightarrow\{0,1\}$ and returns the result. We are tasked with determining if the function is equal for all inputs (`constant'), or if it returns $0$ for half of the inputs and $1$ for the other (`balanced'), in as few evaluations as possible. An extension of this problem to n-bit functions $f:\mathbb{Z}_{2}^{n}\rightarrow\mathbb{Z}_{2}$, called the Deutsch-Jozsa algorithm, was proposed in 1992, and more dramatically shows the computational advantage of the quantum Turing machine~\cite{Deutsch92}.
+\par
+To answer this quesiton deterministically, a classical computer would need to evaluate $f$ for $\frac{2^{n}}{2}+1$ inputs. However, it can be shown that by preparing a quantum computer in a superposition of all $n$-bit binary strings $\ket{\psi}=\frac{1}{\sqrt{2}^{n}}\sum_{x\in\mathbb{Z}_{2}^{n}}\ket{x}$, it sufficies to evaluate $f$ once. Deutsch dubbed this behaviour `quantum parallelism', as it relies both on the ability of quantum states to exist in superposition, and for the existince of relative phase between states such that interference results in a deterministic answer.
+\par
 
-The exact nature of the resource requried for a quantum agorithm to demonstrate quadratic or exponential speedup over a classical algorithm remains an open question. 
-It was demonstrated in 1999 that for Quantum Communication tasks, the presence of entanglement is a necessary and sufficient condition for improvement over classical techniques~\cite{Raz1999}.
+\subsection{The Nature of Quantum Speedup}\label{sec:WhatSpeedup}
+The Deutsch-Jozsa algorithm demonstrates a dramatic reduction in `query complexity', but this is relative to a classical algorithm sequentially testing inputs to be able to give a deterministic answer. In reality, a classical computer testing random inputs would be able to answer the Deutsch-Jozsa problem with a certain probability in much less than $\frac{2^{n}}{2}$ trials. 
+\par
+In classical computational complexity theory, problems of this type belong to a class called `Bounded-error Probability Polynomial'($\BPP$); the class of problems where an efficient algorithm including a randomised process can return the correct answer with an error bounded by a constant independent of the problem size~\cite{Bennett1997}. The quantum analogue of this class, Bounded-error Quantum Polynomial($\BQP$), is considered the class of problems efficiently solvable on a quantum computer.
+\par
+The term `polynomial' in the above definitions refers to the `time' taken to complete the computation, as a function of the number of bits in the problem $n$. In the Turing machine picture, this is the number of steps in the computation, but it can equivalently be defined as the number of logic gates acting on $n$ bits in a boolean circuit. In 1993, Yao demonstrated that an equivalent `circuit' model exists for quantum computing, and that any quantum circuit is capable of simulating a quantum Turing machine~\cite{Yao1993}. This circuit model, where elementary unitary matrices are acted in succession on $n$-qubits to implement a computation $U$, is the framework used to develop and analyse quantum algorithms. 
+\par
+Following the work of Deutsch and Jozsa, the question of quantum speedup became: do there exist problems which are efficient\footnote{`Efficient' problems are generally defined as those in the classes $\P$ or $\BPP$ for classical computers, and $\BQP$ for a quantum computer.} for a quantum computer to solve, but which are `harder' than $\BPP$ for a classical device?
+\par
 
-\subsubsection{Classical Simulation of Quantum Computing} 
+\subsubsection*{Beating BPP}\label{sec:exponentialspeedup}
+This quesiton was answered in a series of three papers, which both established the existence of such problems and then constructed explicit quantum algorithms in $\BQP$ which, for a classical computer, require an exponential number of gate operations as a fucntion of the problem size~\cite{Bennett1997}.
+\par
+The existence of this exponential quantum speedup over classical computation was first proved by Bernstein and Vazirani in their paper on quantum computational complexity theory. As well as demonstrating the possibility of exponential speedup, this paper formalised Deutsch's quantum Turing machine construction, and used it to prove a number of properties about $\BQP$; in particular, they demonstrated that $\BPP\subseteq\BQP$.
+\par
+The first explicit construction of such a problem was given by Simon in 1994, again using an `oracle' formulation of the computation~\cite{Division1998a}. In Simon's problem, the orcale implements a binary function $f: \mathbb{Z}_{2}^{n}\rightarrow\mathbb{Z}_{2}^{n}$, such that for two binary strings $x,y\in\mathbb{Z}_{2}^{n},\;f(x)=f(y)\Leftrightarrow x = y \oplus s$, for some constant string $s$. For a quantum computer, this algorith requires $O(n)$ oracle queries, unlike a classical method which requires $O(2^{\frac{n}{2}}$~\cite{Division1998a}.
+\par
+Simon's algorithm is another example of a `toy' problem, but the techniques presented were then applied by Peter Shor to develop a general quantum algorithm capable of solving two mathematical problems: Prime Factorisation and the Discrete Logarithm~\cite{Division1998a,Shor1997}. In complexity theoretic terms, they belong to the class $\NP$, of problems which require exponential time to solve, but for which a proposed solution can be checked efficiently~\cite{Bennett1997}.
+\par
+It is believed that a polynomial-time classical algorithm for both problems does not exist. In face, the presumed computational hardness of prime factorisation is what guarantees the security of RSA and other cryptographic protocols currently relied upon for secure encryption. The discovery of an efficient quantum algorithm spurred a great deal of interest in quantum computing, as it raised the possibility of devices capable of breaking most if not all modern cryptography~\cite{Shor1997}. 
+\par
+The existence of problems that reside in the class $\BQP$ but for which no efficient classical algorithm exists, demonstrates further the ideas of Feynman and Deutsch that a classical computer cannot efficiently simulate a quantum system. Any efficient simulation of arbitrary quantum systems would be also be able to implement quantum computations, and would in turn give us an eficient classical algorithm for prime factorisation~\cite{Shor1997}.
+\par
+
+\subsubsection*{NP-Complete Problems}\label{sec:notNP}
+While prime factorisation and the discrete logarithm are difficult to solve classicaly, they do not belong to the so called $\NP$-complete problems; problems which belong to the class $\NP$, and for which any \emph{other} problem in $\NP$ can be encoded as an instance of the problem~\cite{ComplexityZoo}. As a result of this `completeness' property, the $\NP$-complete problems are considered some of the most import in computer science~\cite{Bennett1997}.
+\par
+In 1996, Lov Grover developed a quantum algorithm capable of solving arbitrary $\NP$ problems, including the $\NP$-complete problems, using the polynomial `verifier' of a candidate solution implemented as an oracle~\cite{Grover1996}. This algorithm is commonly reffered to as `quantum search', as it was developed as a technique for searching for a single item in a set of $N$ entries. A classical, brute-force search would, in the worst case, require testing all $N$ items, an in general $O(N)$. 
+\par
+Grover's quantum algorithm, however, can succeed in $O(\sqrt{N})$ trials, a more modest quadratic reduction in the oracle complexity. The techniques employed are very similar to the Deutsch-Jozsa algorithm, applying the oracle to a uniform superposition of $N$ inputs. This is followed by the application of a `diffusion' operator, which boosts the amplitude of the state corresponding to the solution. This amplitude is maximal after $O(\sqrt{N})$ applications of this pair of gates~\cite{Grover1996}.
+\par
+A brute-force search is likely not optimal for realistic database searching. For example, if the data can be sorted based on the desired criteria, then a `bracketing and bisection' technique based on testing random entries can succeed in $O(\log_{2}(N))$ trials. However, this kind of brute force problem does arise when considered $\NP$-complete problems, such as optimisation problems. In this case, Grover's algorithm allows a quantum computer to achieve a quadratic speedup for any $\NP$-complete problem. Shortly afterwards, it was shown by Bennett et al.\ that Grover's quadratic speedup is likely optimal for any quantum algorithm tackling $\NP$-complete problems~\cite{Bennett1997}.
+\par
+These results have demonstrated the nature of Quantum Speedup. Quantum computing seems proveably stronger than classical computation when it comes to simulation of physical systems, as it satisifes the Church-Turing-Duetsch thesis. It has also been proven that there exist problems believed to be in $\NP$, which reside in $\BQP$ for a quantum computer. This in turns suggests that$\P\cup\BPP\subseteq\BQP$. However, it is believed that quantum computers cannot offer a greater than quadratic speedup for the $\NP$-complete problems. 
+
+\subsection{What is the Origin of Quantum Speedup?}
+Given the existence of quantum speedup, it is interesting to ask what aspects of quantum mechanics underlie this effect. This is not only an interesting theoretical quesiton, but also relveant to our attempts to realise quantum technologies. Control of quantum systems, including isolating them from the effects of decoherence, represents a significant challenge~\cite{Shor1997}. Understanding the origin of quantum speedup also helps us to understand what criteria our experimental devices will need to satisfty.
+\par
+In section~\ref{sec:QTM}, we introduced the notion of `quantum parallelism', the ability of a quantum system to exist in superpositions of multiple states, for an oracle funciton to be evaluated simulataneously across all inputs, and for interference effects to be exploited in obtaining the correct answer.
+\par
+However, in a 1997 paper, Jozsa discusses the fact that superposition and interference are both effects demonstrated by classical waves~\cite{Jozsa1997}. 
+\subsubsection*{Entanglement}\label{sec:entanglement}
+
+\subsubsection*{Efficient Classical Simulations of Entangled Systems}\label{sec:gketc}
+
+\subsubsection*{Contextuality}\label{sec:context}
+
+\subsection{Fault Tolerant Quantum Computing}\label{sec:FTQC}
+
+\subsubsection*{Magic State Injection}\label{sec:MSI}
+
+\subsubsection*{Simulating Clifford+T Circuits}\label{sec:CHP}
 
 \ifstandalone
-\bibliography{../MresProject.bib}
+\bibliography{../MResProject.bib,../ManualEntries.bib}
 \fi
 \end{document}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
