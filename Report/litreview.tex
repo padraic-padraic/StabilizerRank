@@ -22,12 +22,12 @@ The `quantum advantage' in these early proposals is presrnted somewhat abstractl
 \textquote{Nature isn't classical, dammit, and if you want to make a simulation of nature you better make it quantum mechanical!}
 \par
 
-\subsection{Quantum Turing Machines}\label{sec:QTM}
+\section{Quantum Turing Machines}\label{sec:QTM}
 This question of what computational resources we need to simulate arbitrary physical systems was formalised by Deutsch in his 1985 paper `Quantum theory, the Church-Turing principle, and the universal quantum computer'. This paper is widely considered as establishing the theory of quantum computation, as it formally defines the principle of `Universal Quantum Computing.' 
 \par
 In this paper, Deutsch relates the Church-Turing thesis, a statement about the nature of computationally solveable problems, to the problem of simulating physical systems Feynman highlighted, to give a novel definiton of a universal computing machine: any device capable of perfectly simulating a finitely realisable physical system with finite resources. The classical Turing Machine fails this definition as binary numeral systems cannot be used to represent continuous real numbers require to simulate classical physical systems. Jozsa describes this strengthened Church-Turing-Deutsch thesis as requiring that questions of `What is computable?'\ be grounded in the laws of physics and not characterised by mathematics alone~\cite{Jozsa1997}.
 \par
-Instead, Deutsch introduces a model of a Quantum Turing Machine, which passes this Church-Turing-Deutsch criterion for simulating finite quantum mechanical systems. This is an extension of Feynman's ideas, and the quantum measurement automaton proposed by Albert~\cite{Albert1983}. Unlike Benioff's proposal, which restricted the system to classical computational states, the state of this device is explicity quantum mechanical, allowing any state in the $\mathbb{C}^{2^{n}} \otimes \mathbb{C}^{2^{m}}$ Hilbert space defined by the $n$ qubits in the processor $m$ qubits in the `tape'. The evolution of the combined processor-tape system is the described with unitary dynamics. 
+Instead, Deutsch introduces a model of a Quantum Turing Machine, which passes this Church-Turing-Deutsch criterion for simulating finite quantum mechanical systems. This is an extension of Feynman's ideas, and the quantum measurement automaton proposed by Albert~\cite{Albert1983}. Unlike Benioff's proposal, which restricted the system to classical computational states, the state of this device is explicity quantum mechanical, allowing any state in the Hilbert space $\mathcal{H}=\mathbb{C}^{2^{n}} \otimes \mathbb{C}^{2^{m}}$ defined by the $n$ qubits in the processor $m$ qubits in the `tape'. The evolution of the combined processor-tape system is the described with unitary dynamics. 
 \par
 Interestingly, Deutsch proves that a Quantum Turing Machine would still be restriced to solving the class of `General Recursive' functions defined as computable under the Church-Turing thesis~\cite{Deutsch1985}. However, he goes on to demonstrate that a Quantum Turing Machine is capable of simulating a classical computation, and of simulating a much broader class of physical systems than a classical device~\cite{Deutsch1985}.
 \par
@@ -36,7 +36,7 @@ In this paper, Deutsch also set out an algorithm which demonstrates the ability 
 To answer this quesiton deterministically, a classical computer would need to evaluate $f$ for $\frac{2^{n}}{2}+1$ inputs. However, it can be shown that by preparing a quantum computer in a superposition of all $n$-bit binary strings $\ket{\psi}=\frac{1}{\sqrt{2}^{n}}\sum_{x\in\mathbb{Z}_{2}^{n}}\ket{x}$, it sufficies to evaluate $f$ once. Deutsch dubbed this behaviour `quantum parallelism', as it relies both on the ability of quantum states to exist in superposition, and for the existince of relative phase between states such that interference results in a deterministic answer.
 \par
 
-\subsection{The Nature of Quantum Speedup}\label{sec:WhatSpeedup}
+\section{The Nature of Quantum Speedup}\label{sec:WhatSpeedup}
 The Deutsch-Jozsa algorithm demonstrates a dramatic reduction in `query complexity', but this is relative to a classical algorithm sequentially testing inputs to be able to give a deterministic answer. In reality, a classical computer testing random inputs would be able to answer the Deutsch-Jozsa problem with a certain probability in much less than $\frac{2^{n}}{2}$ trials. 
 \par
 In classical computational complexity theory, problems of this type belong to a class called `Bounded-error Probability Polynomial'($\BPP$); the class of problems where an efficient algorithm including a randomised process can return the correct answer with an error bounded by a constant independent of the problem size~\cite{Bennett1997}. The quantum analogue of this class, Bounded-error Quantum Polynomial($\BQP$), is considered the class of problems efficiently solvable on a quantum computer.
@@ -46,7 +46,7 @@ The term `polynomial' in the above definitions refers to the `time' taken to com
 Following the work of Deutsch and Jozsa, the question of quantum speedup became: do there exist problems which are efficient\footnote{`Efficient' problems are generally defined as those in the classes $\P$ or $\BPP$ for classical computers, and $\BQP$ for a quantum computer.} for a quantum computer to solve, but which are `harder' than $\BPP$ for a classical device?
 \par
 
-\subsubsection*{Beating BPP}\label{sec:exponentialspeedup}
+\subsection{Beating BPP}\label{sec:exponentialspeedup}
 This quesiton was answered in a series of three papers, which both established the existence of such problems and then constructed explicit quantum algorithms in $\BQP$ which, for a classical computer, require an exponential number of gate operations as a fucntion of the problem size~\cite{Bennett1997}.
 \par
 The existence of this exponential quantum speedup over classical computation was first proved by Bernstein and Vazirani in their paper on quantum computational complexity theory. As well as demonstrating the possibility of exponential speedup, this paper formalised Deutsch's quantum Turing machine construction, and used it to prove a number of properties about $\BQP$; in particular, they demonstrated that $\BPP\subseteq\BQP$.
@@ -60,7 +60,7 @@ It is believed that a polynomial-time classical algorithm for both problems does
 The existence of problems that reside in the class $\BQP$ but for which no efficient classical algorithm exists, demonstrates further the ideas of Feynman and Deutsch that a classical computer cannot efficiently simulate a quantum system. Any efficient simulation of arbitrary quantum systems would be also be able to implement quantum computations, and would in turn give us an eficient classical algorithm for prime factorisation~\cite{Shor1997}.
 \par
 
-\subsubsection*{NP-Complete Problems}\label{sec:notNP}
+\subsection{NP-Complete Problems}\label{sec:notNP}
 While prime factorisation and the discrete logarithm are difficult to solve classicaly, they do not belong to the so called $\NP$-complete problems; problems which belong to the class $\NP$, and for which any \emph{other} problem in $\NP$ can be encoded as an instance of the problem~\cite{ComplexityZoo}. As a result of this `completeness' property, the $\NP$-complete problems are considered some of the most import in computer science~\cite{Bennett1997}.
 \par
 In 1996, Lov Grover developed a quantum algorithm capable of solving arbitrary $\NP$ problems, including the $\NP$-complete problems, using the polynomial `verifier' of a candidate solution implemented as an oracle~\cite{Grover1996}. This algorithm is commonly reffered to as `quantum search', as it was developed as a technique for searching for a single item in a set of $N$ entries. A classical, brute-force search would, in the worst case, require testing all $N$ items, an in general $O(N)$. 
@@ -71,23 +71,51 @@ A brute-force search is likely not optimal for realistic database searching. For
 \par
 These results have demonstrated the nature of Quantum Speedup. Quantum computing seems proveably stronger than classical computation when it comes to simulation of physical systems, as it satisifes the Church-Turing-Duetsch thesis. It has also been proven that there exist problems believed to be in $\NP$, which reside in $\BQP$ for a quantum computer. This in turns suggests that$\P\cup\BPP\subseteq\BQP$. However, it is believed that quantum computers cannot offer a greater than quadratic speedup for the $\NP$-complete problems. 
 
-\subsection{What is the Origin of Quantum Speedup?}
+\section{What is the Origin of Quantum Speedup?}
 Given the existence of quantum speedup, it is interesting to ask what aspects of quantum mechanics underlie this effect. This is not only an interesting theoretical quesiton, but also relveant to our attempts to realise quantum technologies. Control of quantum systems, including isolating them from the effects of decoherence, represents a significant challenge~\cite{Shor1997}. Understanding the origin of quantum speedup also helps us to understand what criteria our experimental devices will need to satisfty.
 \par
-In section~\ref{sec:QTM}, we introduced the notion of `quantum parallelism', the ability of a quantum system to exist in superpositions of multiple states, for an oracle funciton to be evaluated simulataneously across all inputs, and for interference effects to be exploited in obtaining the correct answer.
+In section~\ref{sec:QTM}, we introduced the notion of `quantum parallelism', the ability of a quantum system to exist in superpositions of multiple states, for an oracle funciton to be evaluated simulataneously across all inputs. Holevo's bound tells us, however, that while it is possible for the system to be in a superposition of $2^{n}$ states, we can only access classical information of $1$ of these states~\cite{holevo1973}. As such, we also require interference effects to be present in the computation.
 \par
-However, in a 1997 paper, Jozsa discusses the fact that superposition and interference are both effects demonstrated by classical waves~\cite{Jozsa1997}. 
-\subsubsection*{Entanglement}\label{sec:entanglement}
+However, in a 1997 paper, Jozsa discusses the fact that superposition and interference are both effects demonstrated by classical waves~\cite{Jozsa1997}. Instead, Jozsa argues that the critical feature of quantum mechanics is the existence of entangled states. 
+\par
 
-\subsubsection*{Efficient Classical Simulations of Entangled Systems}\label{sec:gketc}
+\subsection{Entanglement and Qauntum Computing}\label{sec:entanglement}
+A general quantum state on $n$-qubits, $\ket{\psi}$, exists in the Hilbert space $\mathcal{H}_{2^{n}}$. If this state can be decomposed into a tensor product of states on smaller Hilbert spaces, then it is called a `separable' or `product' state. If no such decomposition exists, the state is said to be entangled. This definition is exact for pure states, though entanglement for mixed states is much less well characterised~\cite{Laflamme2001}. 
+\par
+In his paper, Jozsa considers the example of a classical system in a superposition of $2^{n}$ states, constructed out of $n$ strings each in a superposition of their two lowest-energy vibrational modes. However, classical systems combine under the cartesian product, in contrast to quantum systems. As a result, this physical system remains a product of $n$ indivudual subsytems. The phenomenon of entanglement, where a physical system cannot be described as a combination of smaller subsystems, is not possible clasically~\cite{Jozsa1997}. 
+\par
+This argument was extended in a later paper in collaboration with Ekert~\cite{Ekert1998}. In this paper, they also consier the possibility of constructuing a classical simulator based on a superposition of $2^{n}$ vibrational modes, which would epxloit an isomorphism between $\otimes^{n}\mathcal{H}_{2}$, the Hilbert space n qubits, and $\mathcal{H}_{2^{n}}$, the Hilbert space of one, $2^{n}$-level quantum system. In this picture, the `isomorphism' would allow us to label certain states of the classical simulator as entangled~\cite{Ekert1998}. 
+\par
+However, the authors demonstrate that such a classical simulator cannot be implemented without an exponential overhead in some physical resource. For example, a system of $n$-qubits, each with the same `energy gap', would require an amount of energy to control that grows linearly in $n$. However, for the $2^{n}$ level classical simulator, the number of energy levels and thus the energy required to implement it grows exponentially in $n$~\cite{Ekert1998}.
+\par
+A similar argument applies if we instead consider a different classical simulator where the $2^{n}$ levels accumulate below a finite upper bound~\cite{Jozsa2003}. In this case, the precision required to resolve these levels grows eponentially in $n$ and the simulator is not physically feasible. Thus, the authors argue, the phenomenon of quantum speedup is due precisely due to the existence of entangled states.  
+\par
+Jozsa and Ekert also indicate the presence of entanglement in existing descriptions of quantum algorithms. For example, when an oracle gate, $O_{f}$, is applied to a superposition of input strings $\frac{1}{2^{n}}\sum_{x\in\mathbb{Z}_{2}^{n}}\ket{x}$, the resulting state is an entangled state of each input with its evaluation $\sum_{x\in\mathbb{Z}_{2}^{n}}\ket{x}\ket{f(x)}$~\cite{Jozsa1997}. Ekert and Jozsa also demonstrate the existence of entanglement in the Quantum Fourier Transform, a subrutine employed in Simon's and Shor's algorithms~\cite{Ekert1998}.
 
-\subsubsection*{Contextuality}\label{sec:context}
+\subsubsection*{Impact on Experimental Efforts}
+This identification of entanglement as a the key resource for quantum speedup had a significant impact on the quantum computing community. In particular, it called into question a series of early quantum computing experiments realised using NMR systems~\cite{Braunstein1999,Linden2001} It was shown by Braunstein et al.\ that, for sufficiently high levels of noise, the `pseudo-pure' states used in NMR computing would remain seperable throughout the computation~\cite{Braunstein1999}. This analysis in fact demonstrated that all previous NMR experiments had systematic noise above this threshold. A subsequent paper by Linden and Popsecu explicitly demonstrated that executions of Shor's algorithm requires the system to become entangled, again ruling out previous NMR results~\cite{Linden2001}. A similar result was shown for Grover's algorithm~\cite{Braunstein2001}.
 
-\subsection{Fault Tolerant Quantum Computing}\label{sec:FTQC}
+\subsection{Is Entanglement Necessary?}\label{sec:classicalsim}
+When trying to understand quantum speedup, it can also be instructive to consider the classical information required to fully describe a quantum system. Any quantum dynamics which can be efficiently simulated classically cannot, by definition, realise quantum speedup. While the counterstatement, that a lack of efficient classical simulation implies quantum speedup, is not necessarily true, an exponential classical complexity is considered indicative of quantum advtanage~\cite{Jozsa2003}.
+\par
+If we consider the classical information required to fully characterise a quantum state, then a product state of $n$ qubits $\ket{\psi}=\bigotimes_{i=1}^{j}\ket{\phi}_{j}$, can be completely described with $O(j)$ complex numbers~\cite{Jozsa1997}. In contrast, entangled states requires $O(2^{n})$ numbers to describe the system completely~\cite{Jozsa1997}. 
+\par
+This exponential classical description as a result of entanglement can also be applied to descriptions of quantum circuits. A given computation on $n$ qubits involves a $2^{n}\times2^{n}$ unitary matrix $U$. However, by decomposing this unitary into a sequence of elementary gates acting on one or two qubits, we can reduce this complexity to $O(\poly(n))$~\cite{Ekert1998}. The overall complexity of the computation is then polynomial in $n$ if the state can be described as a product state at all steps~\cite{Ekert1998} 
+\par
+Jozsa \& Linden used this observation to give a slightly more restricted definition of entanglement as a resource for quantum computation~\cite{Jozsa2003}. In particular, it is not sufficient for only a small, bounded subset of the qubits to become entangled. The authors define the notion of a `p-blocked state', which can be split into subsystems of at most $p$ qubits, and show that a quantum computation is efficiently simulable if at all steps there exists such a decomposition~\cite{Jozsa2003}. Instead, the entanglement in the system must be unbounded, growing to include all qubits present in the computation. They then explicitly demonstrate that, for Shor's algorithm, the entanglement grows in precisely this unbounded way~\cite{Jozsa2003}.
+\par
+Interestingly, they authors also show that we can approximately simulate our quantum computation to within an error$\eta$, provided there exists at all steps a $p$-blocked state $\epsilon$-close to the `true' state of the computation where $\epsilon=c^{T}\eta$, $T$ is the number of steps in the circuit, and $c$ is a constant less than one~\cite{Jozsa2003}. 
+\par
+This pair of results place significant limitations then on exactly how much entanglement we need present in the system such that it's no-longer efficiently classically simulable. A similar
+\par
+This restriction to unbounded entanglement was motivated 
+\subsection{Contextuality}\label{sec:context}
 
-\subsubsection*{Magic State Injection}\label{sec:MSI}
+\section{Fault Tolerant Quantum Computing}\label{sec:FTQC}
 
-\subsubsection*{Simulating Clifford+T Circuits}\label{sec:CHP}
+\subsection{Magic State Injection}\label{sec:MSI}
+
+\subsection{Simulating Clifford+T Circuits}\label{sec:CHP}
 
 \ifstandalone
 \bibliography{../MResProject.bib,../ManualEntries.bib}

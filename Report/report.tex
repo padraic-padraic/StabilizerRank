@@ -1,16 +1,22 @@
-\documentclass[notitlepage,onecolumn,prx,amsmath,amssymb,aps,a4paper,nofootinbib,hyphens]{revtex4-1}
+% \documentclass[notitlepage,twocolumn,prx,amsmath,amssymb,aps,a4paper,nofootinbib,hyphens]{revtex4-1}
+\documentclass[11pt,a4paper,twoside]{report}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+\usepackage{float}
+% \usepackage{epstopdf}
 %-----------------------------------
 %% Sync Bibliography from Mendeley Generated
 \immediate\write18{../sync_bibliography.sh}
 %-----------------------------------
  % Typeset email address with \nolinkurl:
-\makeatletter
-\renewcommand*\email[1][]{\begingroup\sanitize@url\@email{#1}}%
-\def\@email#1#2{%
- \endgroup
- \@AF@join{#1\href{mailto:#2}{\nolinkurl{#2}}}%
-}%
-\makeatother
+% \makeatletter
+% \renewcommand*\email[1][]{\begingroup\sanitize@url\@email{#1}}%
+% \def\@email#1#2{%
+%  \endgroup
+%  \@AF@join{#1\href{mailto:#2}{\nolinkurl{#2}}}%
+% }%
+% \makeatother
 %-----------------------------------
 \usepackage[T1]{fontenc}
 %-----------------------------------
@@ -54,8 +60,8 @@
 \usepackage{dsfont}
 %------------------------------------
 %\usepackage[sc]{mathpazo}
-%\linespread{1.05}
-\usepackage[margin=2cm,includefoot]{geometry}
+\linespread{1.05}
+\usepackage[inner=2cm,outer=3cm,includefoot]{geometry}
 \usepackage{enumerate}
 \usepackage{enumitem}
 \newcolumntype{P}[1]{>{\centering\arraybackslash}p{#1}}
@@ -68,27 +74,30 @@
 \usepackage{standalone}
 %------
 \begin{document}
-\title{\textbf{MRes Report:} Studying Quantum Computing with the Stabilizer Rank Method }
-\author{\textsc{Padraic Calpin}}
-\email{padraic.calpin.15@ucl.ac.uk}
-\affiliation{EPSRC Centre for Doctoral Training in Delivering Quantum Technologies\\ Department of Physics and Astronomy, University College London, Gower Street, London WC1E 6BT}
-\author{\textbf{Supervisor:} \textsc{Dr. Dan Browne}}
-\email{d.browne@ucl.ac.uk}
-\affiliation{EPSRC Centre for Doctoral Training in Delivering Quantum Technologies\\ Department of Physics and Astronomy, University College London, Gower Street, London WC1E 6BT}
-\date{\today}
+% \title{\textbf{MRes Report:} Studying Quantum Computing with the Stabilizer Rank Method }
+% \author{\textsc{Padraic Calpin}}
+% % % \email{padraic.calpin.15@ucl.ac.uk}
+% % \affiliation{EPSRC Centre for Doctoral Training in Delivering Quantum Technologies\\ Department of Physics and Astronomy, University College London, Gower Street, London WC1E 6BT}
+% \author{\textbf{Supervisor:} \textsc{Dr. Dan Browne}}
+% % \email{d.browne@ucl.ac.uk}
+% % \affiliation{EPSRC Centre for Doctoral Training in Delivering Quantum Technologies\\ Department of Physics and Astronomy, University College London, Gower Street, London WC1E 6BT}
+% \date{\today}
+% \maketitle
+\newgeometry{left=1cm,right=1cm}
+\input{report_title.tex}
+\restoregeometry
 \begin{abstract}
    \input{abstract.tex}
 \end{abstract}
-\maketitle
 \tableofcontents
 \pagebreak
-\section{Introduction}
+\chapter{Introduction}
 \input{introduction.tex}
-\section{Literature Review}
+\chapter{Literature Review}
 \input{litreview.tex}
-\section{The Bravyi, Gosset, Smolin, Smith Technique}
+\chapter{The Bravyi, Gosset, Smolin, Smith Technique}
 \input{BSSG.tex}
-\section{Other Magic States}
+\chapter{Other Magic States}
 \bibliographystyle{nicebib}
 \bibliography{../MResProject.bib,../ManualEntries.bib}
 \end{document}
