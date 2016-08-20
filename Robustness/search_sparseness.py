@@ -14,9 +14,16 @@ BETA = acos(1/sqrt(3)) /2
 PI = acos(0.)*2
 H = (cos(PI/8)*qt.basis(2,0) + sin(PI/8)*qt.basis(2,1)).unit()
 F = (cos(BETA)*qt.basis(2,0) + cexp(1j*PI/4)*sin(BETA)*qt.basis(2,1)).unit()
+plus = (qt.basis(2,0)+qt.basis(2,1)).unit()
+S = qt.sigmaz().sqrtm()
+T = S.sqrtm()
+RT = T.sqrtm() * plus
+RRT = T.sqrtm().sqrtm() * plus
 
 def brute_force_sparseness(target, stabs):
+    print('Start brute force')
     for i in range(len(stabs)):
+        print('Test with ' + str(i+1) + ' states')
         for basis in combinations(stabs, i+1): #Try all combinations of i stabiliser states
             proj = OrthoProjector([b.full() for b in basis])
             projection = np.linalg.norm(proj*target.full(), 2)
@@ -50,41 +57,33 @@ def SL0_estimate(targets, stabs, n_qubits):
         print('SL0 done for target')
     return res
 
-def do_for_n_qubits(n, queue=None):
-    strs = ['H', 'F', 'random']
-    targets = (qt.tensor([H]*n), qt.tensor([F]*n),
-               qt.rand_ket(pow(2,n), dims=[[2]*n, [1]*n]))
-    stabs = stab_states(n)
-    print('Do SL0 estimate')
-    SL0s = SL0_estimate(targets, stabs, n)
-    print('Do brute force sparseness')
-    sparseness = [tuple(brute_force_sparseness(target, stabs)) for target in targets]
-    out_string = """For the {0} state on {1} qubits, the SL0 estimate gives a sparseness
-    of {2}, and the brute force search returns a sparseness of {3}.
-    The resulting basis states found were:
-    """
-    res = []
-    for i, s in enumerate(strs):
-        res.append(out_string.format(s, n, SL0s[i], sparseness[i][1]) 
-                   + "\n".join([str(b) for b in sparseness[i][0]]))
-    if queue:
-        queue.put(res)
-        return
-    return res
+FILE_NAME = datetime.datetime.now().strftime('%d%m%Y_%H%M%S')+".txt"
+OUT_STRING_1 = "For the {0} state on {1} qubits,"
+OUT_STRING_2 = "the SL0 estimate gives a sparsenes of {}"
+OUT_STRING_3 = "the brute force search returns a sparseness of {}."
+OUT_STRING_4 = "The resulting basis states found were:"
+
 if __name__ == '__main__':
-    ostring = datetime.datetime.now().strftime('%d%m%Y_%H%M%S')+".txt"
-    queue = multiprocessing.Queue()
+    FILE_NAME = 'MagicSparse.txt'
     ns = [1,2,3,4]
-    for n in ns: #Running in parallel is too resource intensive
+    strs = ['H', 'F']
+    # strs = ['Root T', 'Root Root T']
+    for n in ns:
+        targets = [qt.tensor([H]*n), qt.tensor([F]*n)]
+        # targets = [qt.tensor([RT]*n), qt.tesnor([RRT]*n)]
+        stabs = stab_states(n)
+        for i, t in enumerate(targets):
+            basis, val = brute_force_sparseness(t, stabs)
+            with open(FILE_NAME, 'a') as f:
+                out = OUT_STRING_1.format(strs[i], n)+"\n"
+                out += OUT_STRING_3.format(val) + "\n"
+                out += "\n".join(str(b) for b in basis) +"\n"
+                f.write(out)
+
+    #for n in ns: #Running in parallel is too resource intensive
                  #Calling in a subprocess guarantees allocated memory is freed on completion
-        p = multiprocessing.Process(target=do_for_n_qubits, args=(n, queue))
-        p.start()
-        p.join()
-        res = queue.get()
-        # res = do_for_n_qubits(n)
-        with open(ostring, 'a') as f:
-            for bit in res:
-                f.write(bit+"\n")
+        # p = multiprocessing.Process(target=do_for_n_qubits, args=(n, ostring))
+        # p.start()
+        # p.join()
 
 
-    

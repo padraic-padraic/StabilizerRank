@@ -46,6 +46,7 @@
 %-----------------------------------
 \usepackage{hyperref}
 \usepackage{graphicx}% Include figure files
+\usepackage{wrapfig}
 \graphicspath{{./Figures/}}
 \usepackage{dcolumn}% Align table columns on decimal point
 \usepackage{stackengine}
@@ -61,7 +62,7 @@
 %------------------------------------
 %\usepackage[sc]{mathpazo}
 \linespread{1.05}
-\usepackage[inner=2cm,outer=3cm,includefoot]{geometry}
+\usepackage[outer=2cm,inner=1in,bottom=1in,top=1in,includefoot]{geometry}
 \usepackage{enumerate}
 \usepackage{enumitem}
 \newcolumntype{P}[1]{>{\centering\arraybackslash}p{#1}}
@@ -74,18 +75,9 @@
 \usepackage{standalone}
 %------
 \begin{document}
-% \title{\textbf{MRes Report:} Studying Quantum Computing with the Stabilizer Rank Method }
-% \author{\textsc{Padraic Calpin}}
-% % % \email{padraic.calpin.15@ucl.ac.uk}
-% % \affiliation{EPSRC Centre for Doctoral Training in Delivering Quantum Technologies\\ Department of Physics and Astronomy, University College London, Gower Street, London WC1E 6BT}
-% \author{\textbf{Supervisor:} \textsc{Dr. Dan Browne}}
-% % \email{d.browne@ucl.ac.uk}
-% % \affiliation{EPSRC Centre for Doctoral Training in Delivering Quantum Technologies\\ Department of Physics and Astronomy, University College London, Gower Street, London WC1E 6BT}
-% \date{\today}
-% \maketitle
 \newgeometry{left=1cm,right=1cm}
 \input{report_title.tex}
-\restoregeometry
+\restoregeometry 
 \begin{abstract}
    \input{abstract.tex}
 \end{abstract}
