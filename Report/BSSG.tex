@@ -1,8 +1,81 @@
 \documentclass{standalone}
 \begin{document}
-\subsection{Pauli Based Computation}
-\subsection{Representations of Stabiliser Groups}
+As discussed in Chapter~\ref{chap:intro}, a significant caveat when using classical simulations to study quntum speedup is that the complexity of a simulaition in a given framework does not exclude a more efficient description in an alternative picture. While in general for a system with arbitrary states and arbitrary operations, no efficient classical implementation should exist under the Church-Turing-Deutsch thesis~\cite{Deutsch1985}, the computational complexity of different quantum computing methods is nonetheless instructive to consider. 
+\par
+A significant example of this is the development of a novel technique for simulating Clifford+T quantum circuits developed in a pair of papers by Bravyi, Gosset, Smolin \& Smith~\cite{Bravyi2015,Bravyi2016b}. In particular, this algorithm is capable of sampling the output distribution of a computation made up of $m$ gates on $n$ qubits and $t$ T gates in a time that scales as $O(2^{0.23t}t^{3})$~\cite{Bravyi2016b}. This represents a significant in computational complexity over the \texttt{CHP} method of Aaronson \& Gottesman, which scales as $O(2^{4t})$~\cite{Aaronson2004a}.
+\par
+The core of this \texttt{BSSG} algorithm lies in two results. The first is that any circuit on $n$ qubits with $t$ T-gates can be rewreitten as a sequence of Pauli measurements acting on $t$ edge-type magic states. This is a new model of quantum computation called a `Pauli Based Computation'(PBC)~\cite{Bravyi2015}. 
+\par
+The second result is that it is possible to find decompositions of $n$ qubit states states into a sum of non-otherogonal $n$ qubit stabilser states. The number if states in this decomposition is called the Stabiliser rank $\chi$, and $\chi\leq2^{\frac{n}{2}}$ for edge-type magic states~\cite{Bravyi2016b,Bravyi2015}.
+\par
+In this Chapter, we discuss the proof of these two techniques, and in particular focus on proving the asymptotic limit for the Stabiliser rank of the edge type magic states. We then discuss the algorithmic implementation of the method, and it's significance for quantum computation. 
 
+\section{Pauli Based Computation}\label{sec:pbc}
+A PBC is defined by a sequence of $m$ Pauli measurements on $t$ qubits $P_{i}:i\in\{1,2,\cdots,m\}$. As these are Pauli measurmements, at each step we obtain an outcome $\sigma_{i}=\pm 1$. We allow the choice of Pauli operator to be `adaptive', such that the measurement performed at step $j$ can depend on all the previous outcomes $\{\sigma_{1},\cdots,\sigma_{j-1}$. The final sequence of measurement outcomes is then processed clasically to give the result of the computation. 
+\par
+Bravyi, Smolin and Smith showed that, if the $t$ qubits used in the computation are initialised as the magic state $\ket{A}$, then a PBC is capable of simulating a Clifford+T circuit with $t$ T-gates. The other components of the circuit determine the sequence of Pauli measurements~\cite{Bravyi2015}. 
+\par
+We can begin to understand this correspondence by defining a looser model called a PBC*, where a subset of the qubits in the computation are initialised in the computational state $\ket{0}$, and the rest are initialised as magic states $\ket{A}$. We consider a computation $U$, made up of $c$ Clifford and $t$ T gates on $n$ qubits, followed by a measurement in the computational basis. We can convert this to something resembling a PBC* by replacing each $T$ gate with a magic state injection gadget, as shown in Fig.~\ref{fig:MSI}. 
+\par
+We thus define the new `gadgetized' circuit $V$ acting on $n+t$ qubits, which is made up of only Clifford gates, $X$ basis measurements in the magic state gadgets and a final $Z$ basis measurement on $n$ qubits. As the Clifford group only permutes operators in the Pauli group, we can thus commute the entire circuit $V$ to the end of the computation, after the final measurement, and discard these gates, updating the measurement operators accordingly~\cite{Bravyi2015}. 
+\par
+Because of the measurement-controlled correction in the magic state gadgets, the resulting Pauli measurements on the computational states will be adaptive. This gives a sequence of $t$ 1-qubit measurements, followed by a readout measurement on $n$ qubits; we have successfully converted the computation to PBC* form. 
+\par
+We can assume without loss of generality that all these Pauli operators pairwise commute~\cite{Bravyi2015}. To understand why, consider step $q$, which anticommutes with a previous measurement $P_{p}$. Writing the state of the system after the $q-1$ measurements as $\ket{\phi}$, the state obtained after measurement $q$ is $\frac{1}{\sqrt{2}}(\mathbb{I}+\sigma_{q}P_{q})\ket{\phi}$.
+\par
+We can rewrite this projector as $W_{q}=\frac{1}{\sqrt{2}}(\sigma_{q}P_{q}+\sigma_{p}P_{p})$. For an anticommuting pair of operators $P_{q},P_{p}$, the resulting operator $W\in\mathcal{C}_{2}$, and thus it suffices to pick $\sigma_{t}$ at random, commute the resulting $W_{q}$ to the end of the circuit, and discard it.
+\par
+We can use this method to prove that the action of the measurements on the qubits initialised in the $\ket{0}$ is trivial~\cite{Bravyi2015}. If we prepend the measurement sequence with computational basis measurements on these $\ket{0}$ qubits, which all have a deterministic outcome $+1$. We can use the above argument to make these measurements commute with the sequence $P_{i}$, such that all these Pauli measurements act trivially on these $n$ qubits. Thus, we can discard them, and obtain a PBC on $t$ qubits~\cite{Bravyi2015}. 
+
+\subsubsection*{Finding the PBC Projector}\label{sec:pbcproj}
+We can use this PBC formalism to obtain an explit form for the probability $P_{out}(x)$ of obtaining a given output string $x$ from the set of all $w$-bit binary strings $\mathbb{Z}_{2}^{w}$, where $w\leq n$. The projector on to this output is given by $\Pi_{x} = \ketbra{x}{x}\otimes\mathbb{I}_{else}$. To simplify the analysis, we can postselect on the measurement outcome of the magic state gadgets, such that we don't have to introduce any correction operations. To compensate, we normalise the probabilities accordingly~\cite{Bravyi2015}. This gives the expression
+\begin{equation}
+P_{out}(x) = 2^{t}\matrixel{0^{\otimes n}A^{\otimes t}}{V^{\dagger}(\Pi_{x}\otimes\ketbra{0^{\otimes t}}{0^{\otimes t}})V}{0^{\otimes n}A^{\otimes t}}
+\end{equation}
+where $V$ is the circuit including magic state gadgets on the $n+t$ qubits. The projector $\Pi_{x}\otimes\ketbra{0^{\otimes t}}{0^{\otimes t}}\equiv\Pi$, is a projector on to a stabiliser group $\mathcal{W}\subseteq\mathcal{P}_{n+t}$, generated by $-1^{x_{i}}Z_{i}$ for the $i$th bit of the output string, $Z_{j}$ for the $j$th magic state ancilla, and $I$ otherwise.
+\par
+The action of the Clifford circuit $V$ is thus to map us to a new stabiliser group $\mathcal{V}$ of dimension $w+t$. For any element of $\mathcal{V}$, if the stabiliser doesn't act as $I$ or $Z$ on the first $n$ qubits, then this term reduces to $0$ as 
+\[\matrixel{0}{\text{X}}{0}=\matrixel{0}{\text{Y}}{0}=0.\]
+Thus, the matrix element is non-zero only on a subset $\mathcal{V}_{0}$ with dimension $v=\vert\mathcal{V}_{0}\vert$, and thus we can write
+\begin{equation}
+    \matrixel{0^{\otimes n}}{\Pi_{\mathcal{V}}}{0^{\otimes n}} = 2^{-w-t+v}\matrixel{0^{\otimes n}}{\Pi_{\mathcal{V}_{0}}}{0^{\otimes n}}.
+\end{equation}
+Evaluating the matrix element for the $\ket{0^{\otimes n}}$ states gives a reduced $t$ qubit Stabiliser group $\Pi_{\mathcal{G}}$ acting on the magic states. Taken all together, we thus have 
+\begin{equation}
+    P_{out}(x) = 2^{v-w}\matrixel{A^{\otimes t}}{\Pi_{G}}{A^{\otimes t}}
+\end{equation}
+where $\Pi_{G}=\matrixel{0^{\otimes n}}{V^{\dagger}\Pi V}{0^{\otimes n}}$. 
+
+\section{The Stabiliser Rank}\label{sec:srank}
+Having proven this alternate form for a Clifford+T circuit, Bravyi, Gosset, Smolin \& Smith then examined the problem of trying to efficiently simulate the PBC. In particular, they use the observation that a Pauli measurement on a Stabiliser state can be simulated in a computational time that scales as $O(n^{3})$~\cite{Aaronson2004a,Bravyi2015}. 
+\par
+We could then use this observation to try and simulate Pauli measurements on arbitrary states by decomposing them into a mixture of Stabiliser states 
+\begin{equation}
+\ket{\psi} = \sum_{i=1}^{\chi}z_{i}\ket{\phi_{i}}\quad:\exists\mathcal{S}_{\phi_i}
+\end{equation}
+We can then calculate the matrix element $\matrixel{\phi_{i}}{\Pi_{G}}{\phi_{i}}$ for each Stabiliser state, and then combine them according to the amplitudes $z_{i}$. The computational complexity of this then scales as $O(\chi \poly(n))$, where $\chi$ is called the `Stabiliser Rank' of the state, the number of terms in the decomposition. Stabiliser states also have the obvious property that $\chi=1$, and $\chi$ for an arbitrary $n$ qubit state has a simple upper bound of $2^{n}$, which corresponds to decomposing the state into the computational basis. But, certain states also have a significantly smaller stabiliser rank.
+\par
+In particular, Bravyi, Smolin \& Smith noted that the Stabiliser rank for $\ket{H}\otimes\ket{H}$\footnote{Recall that the state $\ket{H}$ is equivalent to the magic state $\ket{A}$ to within a Clifford rotation.} is $2$; equalt to the rank of an arbitrary single qubit state. This immediately constrains $\chi\leq 2^{\frac{n}{2}}$ for $n$ edge-type magic states, by splitting the state into tensor products of pairs~\cite{Bravyi2015}. Numerical estimates on up to 6 magic states showed that the Stabiliser rank grew slowly, approximately linearly, in the number of copies, and a later analytical effort by Bravyi \& Gosset gave an asymptotic scaling $\chi(\ket{H}^{\otimes t})=O(2^{0.23 t})$~\cite{Bravyi2016b}.
+\par
+\begin{table}[b]
+\centering
+\begin{tabular}{||l|r|r|r|r|r|r||}
+\hline
+$\ket{H^{\otimes n}}$ & 1 & 2 & 3 & 4 & 5 & 6 \\ \hline
+$\chi$ & 2 & 2 & 3 & 4 & 6 & 7\\ \hline
+\end{tabular}
+\caption{Table showing slow growth in the Stabiliser rank for $n$ copies of the magic state, as found in~\cite{Bravyi2015}. These values are estimates, as they were dervied by using Simulated Annealing to search for potential decompositions. In general, finding the Stabiliser rank is computationally demanding as no known algorithm beyond brute-force searching exists.}
+\label{tab:approxchi}
+\end{table}
+An important distinction in this method is that the stabiiser states in the decomposition do not have to be mutually orthogonal. This was a requirement in the extension of \texttt{CHP} to magic states developed by Aaronson \& Gottesman~\cite{Aaronson2004a,Garcia2012}. An alternative idea called `Stabiliser Frame' decomposition was developed by Garcia et al., which built decompositions out of pairs of orthogonal stabiliser states~\cite{Garcia2012,Garcia2015}. The authors successfully demonstrated that this method can achieve a `frame rank' $\vert\mathcal{F}\vert < 2^{k}$. Using this method, they were able to simulate modular exponentiation circuits, which also form a subroutine in Shor's algorithm, achieving a $\vert\mathcal{F}\vert=64$ for a simulation on $81$ qubits~\cite{Garcia2015}. However, they did not examine decompositions of magic states, and the pairwise frame construction means this was based on a simulation of $2\times\vert\mathcal{F}\vert$ stabiliser states.
+\par
+An alternative attempt to find a classical simulation of a Clifford+T simulation was based on the `Discrete Wigner function' quasi-probability formalism, which allows efficient simulation for an state where the distribution is strictly positive valued~\cite{Veitch2012,Howard2014}. It was show that these can be extended to simulate general quantum circuits if they are combined with random samoling techniques, with a resulting running time exponential in the negativity of the Wigner function~\cite{Bravyi2015,Pashayan2015}. Extending this to Clifford+T circuits allows a simulation of a `restricted' PBC made up of only Pauli X and Z measurements, with a complexity $O(2^{0.543 t}\poly(n))$~\cite{Bravyi2015,Delfosse2015}. This is a similar scaling to the `stabiliser rank' method, but importantly this restricted PBC is \emph{not} capable of simulating universal quantum computation~\cite{Bravyi2015}.
+\par
+Bravyi, Smolin \& Smith also conjecture that, for any arbitrary pure state that is not a stabiliser state, the stabiliser rank is minimal for all magic states; both the edge and face type states. In particular, this means that a Clifford+`Magic State' computation seems to be the easiest model to simulate classically. This scaling is still exponential, but the growth of the computational description is smaller than for arbitrary quantum states~\cite{Bravyi2015}. 
+\subsection{Bounding $\chi$ for Edge States}\label{sec:edgebound}
+\section{Representations of Stabiliser Groups}
+\section{Computational Complexity}
+\section{Significance for Quantum Computing}
 \ifstandalone
 \bibliography{../MresProject.bib}
 \fi

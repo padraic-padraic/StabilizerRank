@@ -162,11 +162,12 @@ It has been shown that a Clifford circuit can be boosted to universal quantum co
 \[T\equiv\begin{pmatrix}1&0\\0&\mathe^{1\frac{\pi}{4}}\end{pmatrix}\]
 and the `Toffoli' or `Controlled-Controlled NOT' gate~\cite{Shor1997,Gottesman1999b}. 
 
-\subsection{`Magic' State Injection}\label{sec:MSI}
+\subsection{`Magic' State Injection}
 \begin{wrapfigure}{r}{0.5\textwidth}
     \centering
     \includegraphics[width=0.4\textwidth]{Figures/1-bit-Teleport.png}
 \caption{Circuit for `1-bit teleportation', taken from~\cite{Zhou2000}.}
+\label{fig:MSI}
 \end{wrapfigure}
 A fault tolerant T gate can be realised using a `1-bit teleportation' or state-injeciton circuit, developed by Chuang et al~\cite{Zhou2000}. This simplified teleportation circuit made up of an ancillae qubit $H\ket{0}=\ket{+}$, Clifford gates, and an additional measurement-controlled correction.
 \par
@@ -180,7 +181,7 @@ Because they can boost a stabiliser code to universality, these states are dubbe
 \par
 An alternative type of magic state, which we will dub $\ket{F}$ for `face'-state, lies at the centre of the faces of this octohedron. This is represented schematically in Fig.~\ref{fig:octohedron}. However, because there is currently no known deterministic procedure for using face-type states in state injection, fault tolerant computing schemes focus on using circuits built out of Clifford gates and $T$ gates.
 \par
-\begin{figure}
+\begin{figure}[h]
     \centering
     \includegraphics[width=0.75\textwidth]{Figures/octohedron.pdf}
 \caption{Representation of the set of clasically simulable states in the Bloch Sphere, show the edge and face-type magic states.}
@@ -193,8 +194,10 @@ An efficient algorithm for clasically simulating Clifford circuits, called `CHP'
 \par
 These $n$ stabiliser bit strings are stored in a $2n\times(2n+1)$ tableau, which also contains the `destabilisers', a dual set of operators that, together with the stabiliser generators generate the full $n$-qubit Pauli group. The \texttt{CHP} method is then capable simulating arbitrary Clifford group operations and pauli mesurements on $n$ qubits in a time $\order{n^{3}}$.
 \par
-In the paper, Aaronson \& Gottesman also discuss extensions of the CHP method to mixed states, and to Clifford+T circuits. 
-\ifstandalone
+In the paper, Aaronson \& Gottesman also discuss extensions of the CHP method to the case where a quantum computer is furnished with $b$ non-stabiliser ancillae, $d$ of which are subject to Pauli measurements. In this case, the \texttt{CHP} method acquires an exponential scaling $\order{2^{2b+2d}}$~\cite{Aaronson2004a}. As a Clifford+T computing scheme would consume all magic states, this gives an effective scaling of $\order{2^{4t}}$, where $t$ is the total `$t$ count' of the circuit~\cite{Bravyi2015,Aaronson2004a}. Interestingly, this method performs lightly better if the formalism is adapted o describe non-Clifford gates, giving a scaling $\order{4^{bd}}$ for $b$ gates acting on at most $d$ qubits. In the case of $t$ T-gates acting on single qubits, we obtain a scaling $\order{4^{t}}$~\cite{Aaronson2004a}.
+\par
+This exponential scaling is expected, however, as adding appropriate non-Clifford gates (either directly or with ancillae) promotes our quantum computation to universality, and thus should no-longer be clasically simulable.
+\ifstandalone 
 \bibliography{../MResProject.bib,../ManualEntries.bib}
 \fi
 \end{document}
