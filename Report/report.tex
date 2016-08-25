@@ -41,7 +41,10 @@
 \newtheorem{xca}[exmp]{Exercise}
 \newtheorem{problem}{Problem}[section]
 \theoremstyle{remark}
+\newtheorem{conj}{Conjecture}
+\newtheorem*{lem*}{Lemma}
 \newtheorem*{rem}{Remark}
+\newtheorem*{conj*}{Conjecture}
 \newtheorem*{note}{Note}
 %-----------------------------------
 \usepackage{hyperref}
@@ -67,6 +70,10 @@
 \usepackage{enumitem}
 \newcolumntype{P}[1]{>{\centering\arraybackslash}p{#1}}
 \usepackage{array}
+\usepackage{lmodern}
+\newcolumntype{P}[1]{>{\centering\arraybackslash}p{#1}}
+\usepackage{fancyhdr}
+\renewcommand\bibname{References}
 %-------------
 %My extensions to Dan's template
 \newenvironment{benumerate}{\begin{enumerate}[label=\textbf{\arabic*})]}{\end{enumerate}}
@@ -74,10 +81,27 @@
 \usepackage{csquotes}
 \usepackage{standalone}
 %------
+%%%༼ つ ◕_◕ ༽つ P R A I S E ~ L a T e X ༼ つ ◕_◕ ༽つ%%%
 \begin{document}
 \newgeometry{left=1cm,right=1cm}
 \input{report_title.tex}
 \restoregeometry 
+\pagestyle{fancy}  % Finally, use the "fancy" page style to implement the FancyHdr headers
+\fancyhead{} % clear all header fields
+\fancyhead[RO,LE]{\thepage} % Odd and Even page numbering
+\fancyhead[LO]{\slshape\rightmark}
+\cfoot{}
+\makeatletter
+%\renewcommand{\chaptermark}[1]{%
+%  \markboth{}{\MakeUppercase{%
+%    \ifnum\c@secnumdepth>\m@ne \@chapapp \ \thechapter. \ \fi #1}}%
+%}
+% if you don't want the word `Chapter', use the following
+\renewcommand{\chaptermark}[1]{%
+  \markboth{}{\MakeUppercase{%
+    \ifnum\c@secnumdepth>\m@ne \thechapter. \ \fi #1}}%
+}
+\makeatother
 \begin{abstract}
    \input{abstract.tex}
 \end{abstract}
@@ -89,9 +113,13 @@
 \input{litreview.tex}
 \chapter{The Bravyi, Gosset, Smolin, Smith Technique}\label{chap:bssg}
 \input{BSSG.tex}
-\chapter{Stabiliser Rank for Alternative Resource States}
-\chapter{What is the signifance for Quantum Computing?}
-\chapter{Conclusion}
+\chapter{Stabiliser Rank for Alternative Resource States}\label{chap:results}
+\input{results.tex}
+\chapter{Significance for Fault Tolerant Quantum Devices}\label{chap:discussion}
+\input{discussion.tex}
+\chapter*{Conclusion}\label{chap:conclusion}
+\input{conclusion.tex}
 \bibliographystyle{nicebib}
 \bibliography{../MResProject.bib,../ManualEntries.bib}
 \end{document}
+%%%༼ つ ◕_◕ ༽つ P R A I S E ~ L a T e X ༼ つ ◕_◕ ༽つ%%%
