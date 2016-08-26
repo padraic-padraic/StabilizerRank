@@ -83,7 +83,7 @@
 %------
 %%%༼ つ ◕_◕ ༽つ P R A I S E ~ L a T e X ༼ つ ◕_◕ ༽つ%%%
 \begin{document}
-\newgeometry{left=1cm,right=1cm}
+\newgeometry{left=1cm,right=1cm,top=0cm}
 \input{report_title.tex}
 \restoregeometry 
 \pagestyle{fancy}  % Finally, use the "fancy" page style to implement the FancyHdr headers
@@ -92,15 +92,15 @@
 \fancyhead[LO]{\slshape\rightmark}
 \cfoot{}
 \makeatletter
-%\renewcommand{\chaptermark}[1]{%
-%  \markboth{}{\MakeUppercase{%
-%    \ifnum\c@secnumdepth>\m@ne \@chapapp \ \thechapter. \ \fi #1}}%
-%}
-% if you don't want the word `Chapter', use the following
 \renewcommand{\chaptermark}[1]{%
-  \markboth{}{\MakeUppercase{%
-    \ifnum\c@secnumdepth>\m@ne \thechapter. \ \fi #1}}%
+ \markboth{}{\MakeUppercase{%
+   \ifnum\c@secnumdepth>\m@ne \@chapapp \ \thechapter. \ \fi #1}}%
 }
+% if you don't want the word `Chapter', use the following
+% \renewcommand{\chaptermark}[1]{%
+%   \markboth{}{\MakeUppercase{%
+%     \ifnum\c@secnumdepth>\m@ne \thechapter. \ \fi #1}}%
+% }
 \makeatother
 \begin{abstract}
    \input{abstract.tex}
