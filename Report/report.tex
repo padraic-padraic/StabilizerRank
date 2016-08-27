@@ -92,21 +92,50 @@
 \fancyhead[LO]{\slshape\rightmark}
 \cfoot{}
 \makeatletter
-\renewcommand{\chaptermark}[1]{%
- \markboth{}{\MakeUppercase{%
-   \ifnum\c@secnumdepth>\m@ne \@chapapp \ \thechapter. \ \fi #1}}%
-}
+%\renewcommand{\chaptermark}[1]{%
+%  \markboth{}{\MakeUppercase{%
+%    \ifnum\c@secnumdepth>\m@ne \@chapapp \ \thechapter. \ \fi #1}}%
+%}
 % if you don't want the word `Chapter', use the following
-% \renewcommand{\chaptermark}[1]{%
-%   \markboth{}{\MakeUppercase{%
-%     \ifnum\c@secnumdepth>\m@ne \thechapter. \ \fi #1}}%
-% }
+\renewcommand{\chaptermark}[1]{%
+  \markboth{}{\MakeUppercase{%
+    \ifnum\c@secnumdepth>\m@ne \thechapter. \ \fi #1}}%
+}
 \makeatother
 \begin{abstract}
    \input{abstract.tex}
 \end{abstract}
 \tableofcontents
 \pagebreak
+\newcommand\Declaration[1]{
+%\btypeout{Declaration of Authorship}
+\thispagestyle{plain}
+%\vskip 60\p@
+%\begin{center}{\huge\bf Declaration of Authorship\par}\end{center}
+    \null\vfil
+%\vskip 60\p@
+{\normalsize #1}
+\vfil\vfil\null
+%\cleardoublepage
+}
+% Signature function
+\newcommand{\namesigdate}[2][5cm]{%
+  \begin{tabular}{@{}p{#1}@{}}
+    #2 \\[\normalbaselineskip] \hrule \\[0pt]
+    {\small \textit{Signature}} \\[\normalbaselineskip] \hrule \\[0pt]
+    {\small \textit{Date}}
+  \end{tabular}
+}
+\Declaration{
+I, \textsc{Padraic Calpin}, confirm that the work presented in this report is
+my own.
+Where information has been derived from other sources, I confirm that this has been
+indicated in the report.
+
+\begin{flushright}
+  \namesigdate[2.5in]{}
+\end{flushright}
+}
 \chapter{Introduction}\label{chap:intro}
 \input{introduction.tex}
 \chapter{Literature Review}\label{chap:litreview}
@@ -115,9 +144,9 @@
 \input{BSSG.tex}
 \chapter{Stabiliser Rank for Alternative Resource States}\label{chap:results}
 \input{results.tex}
-\chapter{Significance for Fault Tolerant Quantum Devices}\label{chap:discussion}
+\chapter{Discussion}\label{chap:discussion}
 \input{discussion.tex}
-\chapter*{Conclusion}\label{chap:conclusion}
+\chapter{Conclusion and Future Work}\label{chap:conclusion}
 \input{conclusion.tex}
 \bibliographystyle{nicebib}
 \bibliography{../MResProject.bib,../ManualEntries.bib}
