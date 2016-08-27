@@ -205,10 +205,9 @@ What Bravyi, Gosset, Smolin \& Smith have achieved is a significant reduction in
 The 8-fold quadratic reduction in the exponential scaling is an extremely significant improvement. The scaling remains exponential; we have not developed a method for efficiently simulating a quantum computation, but the circuits are significantly easier to simulate than might be expected. Indeed, a circuit with up to $50$ T-gates has been simulated using a laptop~\cite{Bravyi2015}, rather than High Performance Computing resources. 
 \par
 If we conceptualise quantum speedup as the regime where classical simulation becomes hard, this relative ease of simulation seems to suggest that the T gate has a limited computational power. This would imply we need to consume a large of magic states to realise a quantum algorithm which shows exponential speedup.\\
-
 This indeed seems to be the case; using an implementation of a unitary synthesis algorithm for Clifford+T circuits, I obtained an estimate of 2000 $T$-gates required to realise Shor's algorithm on 10 qubits~\cite{Selinger2012}. Even with the significant reduction in complexity, this would be impractical to simulate using the \texttt{BSSG} method. 
 \par
-This suggests, then, that the Stabiliser Rank of a given state might instead serve as a useful measure of its value as a quantum computational resource. For example, access to arbitrary quantum states with close to maximal stabiliser rank would imply the ability to implement arbitrary operations, which would definitionally be more efficient in terms of required computation time and qubits than the restricted set of operations allowed under a fault tolerant scheme. 
+This suggests, then, that the Stabiliser Rank of a given state might instead serve as a useful measure of its value as a quantum computational resource. 
 
 \section{Details of the Implementation}
 \subsection{Representations of Stabiliser Groups}
