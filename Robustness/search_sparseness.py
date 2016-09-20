@@ -64,21 +64,27 @@ OUT_STRING_3 = "the brute force search returns a sparseness of {}."
 OUT_STRING_4 = "The resulting basis states found were:"
 
 if __name__ == '__main__':
-    FILE_NAME = 'MagicSparse.txt'
-    ns = [1,2,3,4]
-    strs = ['H', 'F']
+    FILE_NAME = 'RandSparse.txt'
+    # ns = [1,2,3,4]
+    # strs = ['H', 'F']
     # strs = ['Root T', 'Root Root T']
-    for n in ns:
-        targets = [qt.tensor([H]*n), qt.tensor([F]*n)]
-        # targets = [qt.tensor([RT]*n), qt.tesnor([RRT]*n)]
+    r = qt.rand_ket(2)
+    r2 = qt.rand_ket(4)
+    targets = [r, qt.tensor(r,r), r2, qt.tensor(r,r,r)]
+    ns = [1, 2, 2, 3]
+    strs = ['Random', '2fold product', '2 qubit random', '3 fold product']
+    for i, n in enumerate(ns):
+        # targets = [qt.tensor([H]*n), qt.tensor([F]*n)]
+        # targets = [qt.tensor([RT]*n), qt.tensor([RRT]*n)]
         stabs = stab_states(n)
-        for i, t in enumerate(targets):
-            basis, val = brute_force_sparseness(t, stabs)
-            with open(FILE_NAME, 'a') as f:
-                out = OUT_STRING_1.format(strs[i], n)+"\n"
-                out += OUT_STRING_3.format(val) + "\n"
-                out += "\n".join(str(b) for b in basis) +"\n"
-                f.write(out)
+        SL0s = SL0_estimate([targets[i]], stabs, n)
+        basis, val = brute_force_sparseness(targets[i], stabs)
+        with open(FILE_NAME, 'a') as f:
+            out = OUT_STRING_1.format(strs[i], n)+"\n"
+            out += OUT_STRING_2.format(SL0s[0])
+            out += OUT_STRING_3.format(val) + "\n"
+            out += "\n".join(str(b) for b in basis) +"\n"
+            f.write(out)
 
     #for n in ns: #Running in parallel is too resource intensive
                  #Calling in a subprocess guarantees allocated memory is freed on completion

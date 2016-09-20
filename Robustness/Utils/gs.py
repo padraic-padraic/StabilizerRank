@@ -28,8 +28,8 @@ def gs_prj(base, target):
 
 def GramSchmidt(vectors):
     dim = vectors[0].size
-    if not check_lin_independence(vectors): #Have never found this test to be violated
-        raise ValueError('Oh god what even')
+    # if not check_lin_independence(vectors): #Have never found this test to be violated
+    #     raise ValueError('Oh god what even')
     V = np.matrix(np.zeros([dim,dim], dtype=np.complex_))
     U = np.matrix(np.zeros([dim,dim], dtype=np.complex_))
     for i in range(len(vectors)):

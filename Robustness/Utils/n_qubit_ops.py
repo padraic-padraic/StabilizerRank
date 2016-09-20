@@ -1,12 +1,13 @@
 """Function to generate the full set of n-qubit stabiliser groups
 using the set of n-qubit paulis with real-valued phase.
 Note this set excludes the n-fold identity, and -1*n-fold identity."""
+from .binary_subspace import BinarySubspace
 from .n_stab import n_stab
 from bitarray import bitarray
 from functools import reduce
 from itertools import combinations
 from qutip import qeye, sigmax, sigmay, sigmaz, tensor
-from random import sample
+from random import sample, randrange, random
 
 import numpy as np
 import operator as op
@@ -19,7 +20,7 @@ Y = sigmay()
 Z = sigmaz()
 
 __all__ = ['gen_stabiliser_groups', 'BinarySubspace', 'string_to_pauli',
-           'stab_states', 'get_proj_eigenstate']
+           'stab_states', 'get_proj_eigenstate', 'gen_random_stabilisers']
 
 def ncr(n, r):
     """Efficient evaluation of ncr, taken from StackOverflow
@@ -37,54 +38,6 @@ def random_combination(iterable, r):
     n = len(pool)
     indices = sorted(sample(range(n), r))
     return tuple(pool[i] for i in indices)
-
-def xnor(a,b):
-    return (a&b)^(~a&~b)
-
-class BinarySubspace(object):
-    """Set-like class for bitarray objects to generate a closed subspace."""
-    def __init__(self, *data):
-        self.order = 0
-        self._items = []
-        self.generators = []
-        for val in data:
-            if not isinstance(val, bitarray):
-                raise ValueError('This class works for bitarrays only!')
-            self.add(val)
-    
-    def __contains__(self, it):
-        for _el in self._items:
-            if all(xnor(_el, it)):
-                return True
-        return False
-
-    def __iter__(self):
-        for item in self._items:
-            yield item
-
-    def _generate(self, obj):
-        for item in self._items:
-            new = item^obj
-            if new in self:
-                continue
-            else:
-                self.order +=1
-                self._items.append(new)
-                self._generate(new)
-        return
-
-    def __eq__(self, other):
-        return all([_el in other for _el in self._items])
-
-    def add(self, obj):
-        for _el in self._items:
-            if all(xnor(obj, _el)):
-                return self
-        self.order +=1
-        self.generators.append(obj)
-        self._items.append(obj)
-        self._generate(obj)
-        return self
 
 def string_to_pauli(bits):
     n = len(bits)//2
@@ -109,11 +62,21 @@ def symplectic_inner_product(n, a, b):
 def test_commutivity(n, bits1, bits2):
     return symplectic_inner_product(n, bits1, bits2) == 0 #1 if they anticommute, 0 if they commute
 
-def find_generators(bitstrings):
+def gen_bitstrings(n):
+    bitstrings = []
+    for i in range(1, pow(2,2*n)): #We ignore the all 0 string as it corresponds to I^{n}
+        bin_string = bin(i)[2:] #strip the 0b from the string
+        a = bitarray(2*n - len(bin_string))
+        a.extend(bin_string)
+        bitstrings.append(a)
+    return bitstrings
+
+def find_generators(bitstrings, **kwargs):
     n = len(bitstrings[0])//2
     subspaces = []
     generators = []
-    target = n_stab(n) // pow(2,n) #We add in the phase later
+    target = kwargs.pop('target', n_stab(n) // pow(2,n)) #We add in the phase later
+    print('Target is {}'.format(target))
     for group in random_combination(combinations(bitstrings, n),
                                     ncr(len(bitstrings), n)):
         if len(group) == 2:
@@ -136,24 +99,7 @@ def find_generators(bitstrings):
             break
     return generators
 
-def gen_stabiliser_groups(n):
-    path = os.path.join(os.path.dirname(__file__),
-                        str(n)+'_generators.pkl')    
-    if os.path.isfile(path):
-        return pickle.load(open(path, 'rb'))
-    bitstrings = []
-    for i in range(1, pow(2, 2*n)): #We ignore the all 0 string as it corresponds to I^{n}
-        bin_string = bin(i)[2:] #strip the 0b from the string
-        a = bitarray(2*n - len(bin_string))
-        a.extend(bin_string)
-        bitstrings.append(a)
-    print('Found {} binary strings'.format(len(bitstrings)))
-    generators = find_generators(bitstrings)
-    nophase_total = len(generators)
-    print('Found {} unique generators, sans phase'.format(len(generators)))
-    pauli_generators = []
-    for group in generators:
-        pauli_generators.append([string_to_pauli(p) for p in group])
+def phaseify_groups(n, generators):
     # Add phase 'by hand'
     phase_strings = []
     for i in range(1, pow(2,n)): #2^n different phase strings exist
@@ -162,9 +108,25 @@ def gen_stabiliser_groups(n):
         a.extend(base)
         phase_strings.append(a)
     for ps in phase_strings:
-        for i in range(nophase_total):
-            pauli_generators.append([-1*p if b else p 
-                                    for p, b in zip(pauli_generators[i], ps)])
+        for i in range(len(generators)):
+            generators.append([-1*p if b else p 
+                                    for p, b in zip(generators[i], ps)])
+    return generators
+
+def gen_stabiliser_groups(n):
+    path = os.path.join(os.path.dirname(__file__),
+                        str(n)+'_generators.pkl')    
+    if os.path.isfile(path):
+        return pickle.load(open(path, 'rb'))
+    bitstrings = gen_bitstrings(n)
+    print('Found {} binary strings'.format(len(bitstrings)))
+    generators = find_generators(bitstrings)
+    nophase_total = len(generators)
+    print('Found {} unique generators, sans phase'.format(nophase_total))
+    pauli_generators = []
+    for group in generators:
+        pauli_generators.append([string_to_pauli(p) for p in group])
+    pauli_generators = phaseify_groups(n, pauli_generators)
     print('Added phase to give {} generatprs'.format(len(pauli_generators)))
     pickle.dump(pauli_generators, open(path, 'wb'))
     return pauli_generators
@@ -206,3 +168,20 @@ def stab_states(n):
         print('Eep')
     pickle.dump(vals, open(path, 'wb'), -1)
     return vals
+
+def gen_random_stabilisers(n_qubits, chi):
+    print('Doing for chi={0} on {1} qubit(s)'.format(chi, n_qubits))
+    bitstrings = gen_bitstrings(n_qubits)
+    generators = find_generators(bitstrings, target=chi)
+    pauli_generators = []
+    for group in generators:
+        pauli_generators.append([string_to_pauli(g) for g in group])
+    for i in range(chi):
+        if random() > (1 / pow(2, n_qubits)): # Add a phase! Randomly...
+            phase_num = bin(randrange(1,pow(2,n_qubits)))[2:]
+            p_bits = bitarray(n_qubits-len(phase_num))
+            p_bits.extend(phase_num)
+            pauli_generators[i] = [-1*p if b else p 
+                                    for p, b in zip(pauli_generators[i], p_bits)]
+    return [get_proj_eigenstate(proj) for proj in 
+            find_projectors(pauli_generators)]
