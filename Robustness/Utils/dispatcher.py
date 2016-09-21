@@ -1,11 +1,24 @@
 """Pair of routines for parallelising function execution. 
 Originally written for an earlier project, now hosted at https://gist.github.com/padraic-padraic/98396271d1158f0b63865a9c172e7710"""
 
+from .pretty_print import AnalysisResult
+
 import multiprocessing
 
 __all__ = ["repeat_execution", "star_execution"]
 
 N_PROCESSORS = multiprocessing.cpu_count()
+
+class OutputToQueue(object):
+    def __init__(self, queue):
+        self.queue = queue
+
+    def __call__(self, f):
+        def wrapped_f(**kwargs):
+            output = f(**kwargs)
+            if output is not None:
+                output.write()
+        return wrapped_f
 
 def err(exp):
     print(exp)
@@ -36,3 +49,4 @@ def star_execution(f, arg_list, kwarg_list):
     pool.close()
     pool.join()
     return [r.get() for r in results]
+

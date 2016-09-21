@@ -9,7 +9,8 @@ from math import acos, cos, exp, sin, sqrt
 from math import pow as fpow #Differentiate from stdlib pow
 from random import randrange, random
 from Utils import gen_random_stabilisers, OrthoProjector, string_to_pauli
-from Utils.dispatcher import star_execution
+from Utils.dispatcher import OutputToQueue
+from Utils.pretty_print import AnalysisResult
 
 BETA = acos(1/sqrt(3)) /2
 PI = acos(0.)*2
@@ -21,7 +22,27 @@ T = S.sqrtm()
 RT = T.sqrtm() * PLUS
 RRT = T.sqrtm().sqrtm() * PLUS
 
-def do_anneal(n_qubits, target, chi, **kwargs):
+STATES = {'T':T,
+          'RT':RT,
+          'RRT':RRT,
+          'F':F,
+          'H':H}
+
+result_queue = multiprocessing.Queue()
+
+@OutputToQueue(result_queue)
+def format_for_output(**kwargs):
+    func = kwargs.pop('func')
+    fname = kwargs.pop('fname')
+    ostring = kwargs.pop('ostring')
+    n = kwargs.pop('n_qubits')
+    target = kwargs.pop('target_string')
+    output = func(kwargs.pop('func_inputs'))
+    if output is None:
+        return None
+    return AnalysisResult(n, target, output, fname=fname, ostring=ostring)
+
+def do_anneal(**kwargs):
     beta = kwargs.pop('beta_init', 1)
     beta_max = kwargs.pop('beta_max', 4000)
     anneal_steps = kwargs.pop('M', 1000)
@@ -55,22 +76,23 @@ def do_anneal(n_qubits, target, chi, **kwargs):
     return 'No decomposition found for chi={}\n'.format(chi)
 
 if __name__ == '__main__':
-    targets = [qt.tensor([RT]*2), qt.tensor([RT]*3)]
-    ns = [2, 3]
-    zip_list = [list(pair) for pair in zip(targets, ns)]
-    args_list = []
-    for state, n in zip_list:
+    states = ['RT', 'RRT', 'F']
+    ns = [2, 3, 4, 5]
+    jobs = []
+    for state, n in zip(states, ns):
+        details = {'ostring':ostring,
+                   'fname':state+".txt",
+                   'n_qubits':n,}
+                   'target_string':state}
+        func_inputs = {'target':qt.tensor([STATES[state]]*n),
+                       'n_qubits':n}
         for i in range(2, n):
-            args_list.append([n,state,i])
-    kwargs_list = [{}]*2
-    results = star_execution(do_anneal, args_list, kwargs_list)
-    for r in results:
-        if isinstance(r, tuple):
-            print('Decomposition found with chi={}'.format(r[0]))
-        else:
-            print(r)
-    # for n, target in zip(ns, targets):
-    #     for chi in range(2, pow(2,n)+1):
-    #         res = do_anneal(n, target, chi)
-    #         if isinstance(res, tuple):
-    #             print('Found decomposition with rank {}').format(res[0])
+            job = deepcopy(details)
+            job['func_inputs'] = deepcopy(func_inputs)
+            job['func_inputs']['chi'] = i
+            jobs.append(job)
+    pool = multiprocessing.Pool(Utils.dispatcher.N_PROCESSORS)
+    results = pool.map_async(format_for_output, jobs)
+    pool.close()
+    pool.join()
+    
