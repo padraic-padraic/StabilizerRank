@@ -9,17 +9,6 @@ __all__ = ["repeat_execution", "star_execution"]
 
 N_PROCESSORS = multiprocessing.cpu_count()
 
-class OutputToQueue(object):
-    def __init__(self, queue):
-        self.queue = queue
-
-    def __call__(self, f):
-        def wrapped_f(**kwargs):
-            output = f(**kwargs)
-            if output is not None:
-                output.write()
-        return wrapped_f
-
 def err(exp):
     print(exp)
 

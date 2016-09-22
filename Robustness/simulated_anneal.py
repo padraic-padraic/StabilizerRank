@@ -9,7 +9,7 @@ from math import acos, cos, exp, sin, sqrt
 from math import pow as fpow #Differentiate from stdlib pow
 from random import randrange, random
 from Utils import gen_random_stabilisers, OrthoProjector, string_to_pauli
-from Utils.dispatcher import OutputToQueue
+from Utils.dispatcher import N_PROCESSORS
 from Utils.pretty_print import AnalysisResult
 
 BETA = acos(1/sqrt(3)) /2
@@ -28,19 +28,20 @@ STATES = {'T':T,
           'F':F,
           'H':H}
 
-result_queue = multiprocessing.Queue()
+success_string = """A decomposition was found with rank {chi}. The list of 
+                    states found looked like:\n {states}"""
 
-@OutputToQueue(result_queue)
-def format_for_output(**kwargs):
-    func = kwargs.pop('func')
-    fname = kwargs.pop('fname')
-    ostring = kwargs.pop('ostring')
-    n = kwargs.pop('n_qubits')
-    target = kwargs.pop('target_string')
-    output = func(kwargs.pop('func_inputs'))
-    if output is None:
-        return None
-    return AnalysisResult(n, target, output, fname=fname, ostring=ostring)
+write_string = """Checking for the existence of a decompositon of the state 
+                  {target} on {n_qubits} qubit(s).\n {}"""
+
+def format_for_output(job_dict):
+    func = job_dict.pop('func')
+    fname = job_dict.pop('fname')
+    ostring = job_dict.pop('ostring')
+    n = job_dict.pop('n_qubits')
+    target = job_dict.pop('target_string')
+    output = func(**job_dict.pop('func_inputs'))
+    return AnalysisResult(n, target, output, fname=fname, ostring=write_string)
 
 def do_anneal(**kwargs):
     beta = kwargs.pop('beta_init', 1)
@@ -48,6 +49,9 @@ def do_anneal(**kwargs):
     anneal_steps = kwargs.pop('M', 1000)
     b_diff = (beta_max-beta)/anneal_steps
     walk_steps = kwargs.pop('steps', 100)
+    n_qubits = kwargs.pop('n_qubits')
+    target = kwargs.pop('target')
+    chi = kwargs.pop('chi')
     states = gen_random_stabilisers(n_qubits, chi)
     identity = qt.qeye(pow(2,n_qubits))
     identity.dims = [[2]*n_qubits, [2]*n_qubits]
@@ -56,10 +60,10 @@ def do_anneal(**kwargs):
             projector = OrthoProjector([s.full() for s in states])
             projection = np.linalg.norm(projector*target.full(), 2)
             if np.allclose(projection, 1.):
-                return chi, states
+                return success_string.format(chi=chi, states=states)
             a = randrange(0,len(states))
             p_string = bin(randrange(0,pow(2,2*n_qubits)))[2:]
-            p_bits = bitarray(2*n - len(p_string))
+            p_bits = bitarray(2*n_qubits - len(p_string))
             p_bits.extend(p_string)
             pauli = string_to_pauli(p_bits)
             new_states = deepcopy(states)
@@ -75,24 +79,33 @@ def do_anneal(**kwargs):
         beta += b_diff
     return 'No decomposition found for chi={}\n'.format(chi)
 
-if __name__ == '__main__':
+def run_analysis():
     states = ['RT', 'RRT', 'F']
-    ns = [2, 3, 4, 5]
-    jobs = []
+    ns = [2]*len(states)
+    results = []
+    pool = multiprocessing.Pool(N_PROCESSORS)
     for state, n in zip(states, ns):
-        details = {'ostring':ostring,
+        details = {'ostring': write_string,
                    'fname':state+".txt",
-                   'n_qubits':n,}
-                   'target_string':state}
+                   'n_qubits':n,
+                   'target_string':state,
+                   'func':do_anneal}
         func_inputs = {'target':qt.tensor([STATES[state]]*n),
                        'n_qubits':n}
-        for i in range(2, n):
+        for i in range(2, pow(2,n)):
             job = deepcopy(details)
             job['func_inputs'] = deepcopy(func_inputs)
             job['func_inputs']['chi'] = i
-            jobs.append(job)
-    pool = multiprocessing.Pool(Utils.dispatcher.N_PROCESSORS)
-    results = pool.map_async(format_for_output, jobs)
+            results.append(pool.apply_async(format_for_output, [job])) #Pool is so dumb
     pool.close()
     pool.join()
-    
+    while results:
+        for index, res in enumerate(results):
+            if res.ready():
+                out = results.pop(index).get()
+                out.write()
+                break
+
+if __name__ == '__main__':
+    run_analysis()
+

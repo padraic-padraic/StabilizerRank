@@ -76,7 +76,6 @@ def find_generators(bitstrings, **kwargs):
     subspaces = []
     generators = []
     target = kwargs.pop('target', n_stab(n) // pow(2,n)) #We add in the phase later
-    print('Target is {}'.format(target))
     for group in random_combination(combinations(bitstrings, n),
                                     ncr(len(bitstrings), n)):
         if len(group) == 2:
