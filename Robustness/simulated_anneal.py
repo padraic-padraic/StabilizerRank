@@ -1,6 +1,8 @@
+#! /usr/bin/env python
+import matplotlib
+matplotlib.use('Agg')
 import multiprocessing
 import numpy as np
-import qutip as qt
 
 from bitarray import bitarray
 from cmath import exp as cexp #Differentiate from real-valued exp
@@ -8,16 +10,17 @@ from copy import deepcopy
 from math import acos, cos, exp, sin, sqrt
 from math import pow as fpow #Differentiate from stdlib pow
 from random import randrange, random
+from qutip import basis, qeye, tensor, sigmaz
 from Utils import gen_random_stabilisers, OrthoProjector, string_to_pauli
 from Utils.dispatcher import N_PROCESSORS
 from Utils.pretty_print import AnalysisResult
 
 BETA = acos(1/sqrt(3)) /2
 PI = acos(0.)*2
-H = (cos(PI/8)*qt.basis(2,0) + sin(PI/8)*qt.basis(2,1)).unit()
-F = (cos(BETA)*qt.basis(2,0) + cexp(1j*PI/4)*sin(BETA)*qt.basis(2,1)).unit()
-PLUS = (qt.basis(2,0)+qt.basis(2,1)).unit()
-S = qt.sigmaz().sqrtm()
+H = (cos(PI/8)*basis(2,0) + sin(PI/8)*basis(2,1)).unit()
+F = (cos(BETA)*basis(2,0) + cexp(1j*PI/4)*sin(BETA)*basis(2,1)).unit()
+PLUS = (basis(2,0)+basis(2,1)).unit()
+S = sigmaz().sqrtm()
 T = S.sqrtm()
 RT = T.sqrtm() * PLUS
 RRT = T.sqrtm().sqrtm() * PLUS
@@ -53,7 +56,7 @@ def do_anneal(**kwargs):
     target = kwargs.pop('target')
     chi = kwargs.pop('chi')
     states = gen_random_stabilisers(n_qubits, chi)
-    identity = qt.qeye(pow(2,n_qubits))
+    identity = qeye(pow(2,n_qubits))
     identity.dims = [[2]*n_qubits, [2]*n_qubits]
     while beta <= beta_max:
         for i in range(walk_steps):
@@ -81,16 +84,19 @@ def do_anneal(**kwargs):
 
 def run_analysis():
     states = ['RT', 'RRT', 'F']
-    ns = [2]*len(states)
+    ns = [3,4]*len(states)
     results = []
-    pool = multiprocessing.Pool(N_PROCESSORS)
+    print('Create Pool')
+    pool = multiprocessing.Pool(8)
+    print('Created Pool')
     for state, n in zip(states, ns):
+        print('Prepping {} with {} qubit(s).'.format(state,n))
         details = {'ostring': write_string,
-                   'fname':state+".txt",
+                   'fname':"/home/ucaphdc/Scratch/output/"+state+".txt",
                    'n_qubits':n,
                    'target_string':state,
                    'func':do_anneal}
-        func_inputs = {'target':qt.tensor([STATES[state]]*n),
+        func_inputs = {'target':tensor([STATES[state]]*n),
                        'n_qubits':n}
         for i in range(2, pow(2,n)):
             job = deepcopy(details)

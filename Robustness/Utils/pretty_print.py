@@ -2,13 +2,13 @@ __all__ = ['format_for_output', 'AnalysisResult']
 
 class AnalysisResult(object):
     def __init__(self, n_qubits, target, *args, **kwargs):
-        self.n = n_qubits
+        self.n_qubits = n_qubits
         self.target = target
         self.fname = kwargs.pop('fname', None)
         self.ostring = kwargs.pop('ostring', '')
         self.data = args
     def __str__(self):
-        if ostring:
+        if self.ostring:
             return self.ostring.format(n_qubits=self.n_qubits, 
                                        target=self.target,
                                        *self.data)
