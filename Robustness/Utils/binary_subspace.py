@@ -1,8 +1,14 @@
-from bitarray import bitarray
+# from bitarray import bitarray
+import numpy as np
 
 __all__ = ['BinarySubspace']
 def xnor(a,b):
     return (a&b)^(~a&~b)
+
+
+def xor(a,b):
+      return (a|b)&~(a&b)
+
 
 class BinarySubspace(object):
     """Set-like class for bitarray objects to generate a closed subspace."""
@@ -11,13 +17,16 @@ class BinarySubspace(object):
         self._items = []
         self.generators = []
         for val in data:
-            if not isinstance(val, bitarray):
-                raise ValueError('This class works for bitarrays only!')
+            # if not isinstance(val, bitarray):
+            if not isinstance(val, np.ndarray):
+                raise ValueError('This class works for numpy arrays only!')
+                # raise ValueError('This class works for bitarrays only!')
             self.add(val)
     
     def __contains__(self, it):
         for _el in self._items:
-            if all(xnor(_el, it)):
+            # if all(xnor(_el, it)):
+            if np.array_equal(_el, it):
                 return True
         return False
 
@@ -27,7 +36,8 @@ class BinarySubspace(object):
 
     def _generate(self, obj):
         for item in self._items:
-            new = item^obj
+            # new = item^obj
+            new = xor(item, obj)
             if new in self:
                 continue
             else:

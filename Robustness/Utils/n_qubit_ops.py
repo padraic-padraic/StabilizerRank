@@ -31,13 +31,13 @@ def ncr(n, r):
     denom = reduce(op.mul, range(1, r+1))
     return numer//denom
 
-def random_combination(iterable, r):
-    """Random selection from itertools.combinations(iterable, r)
-    Taken from itertools.recipes on pydoc"""
-    pool = tuple(iterable)
-    n = len(pool)
-    indices = sorted(sample(range(n), r))
-    return tuple(pool[i] for i in indices)
+# def random_combination(iterable, r):
+#     """Random selection from itertools.combinations(iterable, r)
+#     Taken from itertools.recipes on pydoc"""
+#     pool = tuple(iterable)
+#     n = len(pool)
+#     indices = sorted(sample(range(n), r))
+#     return tuple(pool[i] for i in indices)
 
 def string_to_pauli(bits):
     n = len(bits)//2
@@ -56,7 +56,8 @@ def string_to_pauli(bits):
 def symplectic_inner_product(n, a, b):
     x_a, z_a = a[:n], a[n:]
     x_b, z_b = b[:n], b[n:]
-    count = (x_a&z_b).count() + (x_b&z_a).count()
+    # count = (x_a&z_b).count() + (x_b&z_a).count()
+    count = np.sum((x_a&z_b)) + np.sum((x_b&z_a))
     return count%2
 
 def test_commutivity(n, bits1, bits2):
@@ -66,8 +67,11 @@ def gen_bitstrings(n):
     bitstrings = []
     for i in range(1, pow(2,2*n)): #We ignore the all 0 string as it corresponds to I^{n}
         bin_string = bin(i)[2:] #strip the 0b from the string
-        a = bitarray(2*n - len(bin_string))
-        a.extend(bin_string)
+        # a = bitarray(2*n - len(bin_string))
+        # a.extend(bin_string)
+        # bitstrings.append(a)
+        bin_string = '0'*(2*n - len(bin_string)) + bin_string
+        a = np.array([b == '1' for b in bin_string])
         bitstrings.append(a)
     return bitstrings
 
@@ -76,8 +80,9 @@ def find_generators(bitstrings, **kwargs):
     subspaces = []
     generators = []
     target = kwargs.pop('target', n_stab(n) // pow(2,n)) #We add in the phase later
-    for group in random_combination(combinations(bitstrings, n),
-                                    ncr(len(bitstrings), n)):
+    i=0
+    for group in combinations(bitstrings, n):
+        i+=1
         if len(group) == 2:
             if not test_commutivity(n, group[0], group[1]):
                 continue
@@ -90,10 +95,14 @@ def find_generators(bitstrings, **kwargs):
             continue
         if len(candidate._items) < pow(2,n):
             continue
-        res = tuple(i for i in sorted(candidate._items))
-        if not res in subspaces:
-            subspaces.append(res)
-            generators.append(tuple(candidate.generators))
+        # res = tuple(i for i in sorted(candidate._items))
+        res = tuple(i for i in sorted(candidate._items, key=np.sum))
+        # if not res in subspaces:
+        for space in subspaces:
+            if np.all([np.array_equal(_el1, _el2) for _el1, _el2 in zip(res, space)]):
+                continue
+        subspaces.append(res)
+        generators.append(tuple(candidate.generators))
         if len(generators) == target:
             break
     return generators
@@ -106,8 +115,8 @@ def phaseify_groups(n, generators):
         a = bitarray(n-len(base))
         a.extend(base)
         phase_strings.append(a)
-    for ps in phase_strings:
-        for i in range(len(generators)):
+    for i in range(len(generators)):
+        for ps in phase_strings:
             generators.append([-1*p if b else p 
                                     for p, b in zip(generators[i], ps)])
     return generators
